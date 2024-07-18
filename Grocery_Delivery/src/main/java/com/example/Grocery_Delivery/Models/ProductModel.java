@@ -2,14 +2,9 @@ package com.example.Grocery_Delivery.Models;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-import java.time.LocalDate;
 import java.util.Date;
 
-@Setter
-@Getter
 @Data
 @Table(name = "Product")
 @Entity
@@ -41,18 +36,14 @@ public class ProductModel {
     private Float PRICE;
 
     @Column(name = "MANUFACTUREDATE")
-    private LocalDate MANUFACTUTREDATE;
+    private Date M_Date;
 
     @Column(name = "EXPIRYDATE")
-    private LocalDate EXPIRYDATE;
+    private Date EXPIRYDATE;
 
-    @Column(name = "CATEGORY")
+    @Column(name = "C_Name")
     private String CATEGORY;
 
-    @Column(name = "STOCK")
-    private Long STOCK;
-
-    public ProductModel(){
-
-    }
+    @Column(name = "QUANTITY")
+    private Long QUANTITY;
 }
