@@ -17,6 +17,4 @@ public class ProductService {
         return (List<ProductModel>) productRepository.findAll();
     }
 
-
-
 }
