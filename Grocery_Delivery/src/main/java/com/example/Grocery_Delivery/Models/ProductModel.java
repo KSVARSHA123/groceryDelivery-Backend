@@ -9,33 +9,41 @@ import java.util.Date;
 @Table(name = "Product")
 @Entity
 public class ProductModel {
+//    PRODUCTID
+//            VENDORID
+//    PRODUCTDESCRIPTION
+//            PRICE
+//    MANUFACTUREDATE
+//            EXPIRYDATE
+//    CATEGORY
+//            QUANTITY
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "P_Id")
-    private Long P_Id;
+    @Column(name = "PRODUCTID")
+    private Long PRODUCTID;
 
-    @Column(name = "V_Id")
-    private Long V_Id;
+    @Column(name = "VENDORID")
+    private Long VENDORID;
 
-    @Column(name = "P_Name")
-    private String P_Name;
+    @Column(name = "PRODUCTNAME")
+    private String PRODUCTNAME;
 
-    @Column(name = "P_Desc")
-    private String P_Desc;
+    @Column(name = "PRODUCTDESCRIPTION")
+    private String PRODUCTDESCRIPTION;
 
-    @Column(name = "Price")
-    private Float Price;
+    @Column(name = "PRICE")
+    private Float PRICE;
 
-    @Column(name = "M_Date")
+    @Column(name = "MANUFACTUREDATE")
     private Date M_Date;
 
-    @Column(name = "E_Date")
-    private Date E_Date;
+    @Column(name = "EXPIRYDATE")
+    private Date EXPIRYDATE;
 
     @Column(name = "C_Name")
-    private String C_Name;
+    private String CATEGORY;
 
-    @Column(name = "quantity")
-    private Long Quantity;
+    @Column(name = "QUANTITY")
+    private Long QUANTITY;
 }
