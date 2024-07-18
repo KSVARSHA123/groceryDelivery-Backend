@@ -11,6 +11,7 @@ import lombok.Setter;
 @Table(name = "Users")
 @Entity
 public class UserModel {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USERID")
@@ -31,12 +32,14 @@ public class UserModel {
     @Column(name = "USERROLE")
     private String USERROLE;
 
-    public UserModel(Long USERID,String USERNAME,String USEREMAIL,Long USERPHONE,String USERPASSWORD,String USERROLE) {
-        this.USERID = USERID;
-        this.USERNAME = USERNAME;
-        this.USEREMAIL = USEREMAIL;
-        this.USERPHONE = USERPHONE;
-        this.USERPASSWORD = USERPASSWORD;
-        this.USERROLE=USERROLE;
-    }
+    public UserModel(){}
+
+//    public UserModel(Long USERID,String USERNAME,String USEREMAIL,Long USERPHONE,String USERPASSWORD,String USERROLE) {
+//        this.USERID = USERID;
+//        this.USERNAME = USERNAME;
+//        this.USEREMAIL = USEREMAIL;
+//        this.USERPHONE = USERPHONE;
+//        this.USERPASSWORD = USERPASSWORD;
+//        this.USERROLE=USERROLE;
+//    }
 }
