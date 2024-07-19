@@ -1,4 +1,4 @@
-package com.example.Grocery_Delivery.Models;
+package com.grocerydelivery.backend.Models;
 
 import jakarta.persistence.*;
 import lombok.Data;

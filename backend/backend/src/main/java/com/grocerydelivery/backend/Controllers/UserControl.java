@@ -1,8 +1,8 @@
-package com.example.Grocery_Delivery.Controllers;
+package com.grocerydelivery.backend.Controllers;
 
-import com.example.Grocery_Delivery.Models.UserModel;
-import com.example.Grocery_Delivery.Repositories.UserRepository;
-import com.example.Grocery_Delivery.Services.UserService;
+import com.grocerydelivery.backend.Models.UserModel;
+import com.grocerydelivery.backend.Repositories.UserRepository;
+import com.grocerydelivery.backend.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

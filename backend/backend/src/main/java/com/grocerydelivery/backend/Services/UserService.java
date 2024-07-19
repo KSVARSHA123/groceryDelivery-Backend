@@ -1,7 +1,7 @@
-package com.example.Grocery_Delivery.Services;
+package com.grocerydelivery.backend.Services;
 
-import com.example.Grocery_Delivery.Models.UserModel;
-import com.example.Grocery_Delivery.Repositories.UserRepository;
+import com.grocerydelivery.backend.Models.UserModel;
+import com.grocerydelivery.backend.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,13 +1,13 @@
-package com.example.Grocery_Delivery;
+package com.grocerydelivery.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GroceryDeliveryApplication {
+public class BackendApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GroceryDeliveryApplication.class, args);
+		SpringApplication.run(BackendApplication.class, args);
 	}
 
 }

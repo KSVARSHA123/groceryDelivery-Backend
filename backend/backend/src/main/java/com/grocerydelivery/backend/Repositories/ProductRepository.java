@@ -1,6 +1,6 @@
-package com.example.Grocery_Delivery.Repositories;
+package com.grocerydelivery.backend.Repositories;
 
-import com.example.Grocery_Delivery.Models.ProductModel;
+import com.grocerydelivery.backend.Models.ProductModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
