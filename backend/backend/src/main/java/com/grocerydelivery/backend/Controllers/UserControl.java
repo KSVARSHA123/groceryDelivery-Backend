@@ -30,6 +30,16 @@ public class UserControl {
         if(PHONE==null) {userService.updateUserN(NAME,USERID);}
         else if(NAME==null){userService.updateUserP(PHONE,USERID);}
         else{userService.updateUserNP(NAME,PHONE,USERID);}
-
     }
+
+//    @PostMapping("/login")
+//    public String login(@RequestBody UserModel userModel){
+//        UserModel loggedInUser=userService.Login(userModel.getUSEREMAIL(),userModel.getUSERPASSWORD());
+//        if(loggedInUser!=null){
+//            return "Login Succeccful";
+//        }
+//        else{
+//            return "Invalid Login";
+//        }
+//    }
 }

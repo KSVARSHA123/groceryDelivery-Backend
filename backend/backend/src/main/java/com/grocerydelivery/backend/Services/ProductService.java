@@ -42,4 +42,12 @@ public class ProductService {
         productRepository.deleteById(PRODUCTID);
     }
 
+    public void addStock(Long PRODUCTID,Long STOCK){
+        productRepository.addStock(PRODUCTID,STOCK);
+    }
+
+    public void removeStock(Long PRODUCTID, Long STOCK){
+        productRepository.removeStock(PRODUCTID,STOCK);
+    }
+
 }

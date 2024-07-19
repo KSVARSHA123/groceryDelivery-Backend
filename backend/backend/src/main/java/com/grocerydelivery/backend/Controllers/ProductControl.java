@@ -49,5 +49,15 @@ public class ProductControl {
         productService.removeProduct(PRODUCTID);
     }
 
+    @PutMapping("/addStock/{PRODUCTID}")
+    public void addStock(@PathVariable Long PRODUCTID,@RequestParam Long STOCK){
+        productService.addStock(PRODUCTID,STOCK);
+    }
+    @PutMapping("/removeStock/{PRODUCTID}")
+    public void removeStock(@PathVariable Long PRODUCTID,@RequestParam Long STOCK){
+        productService.removeStock(PRODUCTID,STOCK);
+    }
+
+
 
 }

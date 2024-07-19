@@ -33,4 +33,15 @@ public interface ProductRepository extends JpaRepository<ProductModel, Long> {
     @Modifying
     @Query(value = "UPDATE Product SET STOCK= :STOCK, MANUFACTUREDATE= :M_DATE,EXPIRYDATE= :EXP_DATE WHERE PRODUCTID = :PRODUCTID", nativeQuery = true)
     void updateProductStockDate(@Param("PRODUCTID") Long PRODUCTID, @Param("STOCK") Long STOCK, @Param("M_DATE")LocalDate M_DATE,@Param("EXP_DATE") LocalDate EXP_DATE);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE Product SET STOCK = STOCK+:STOCK WHERE PRODUCTID = :PRODUCTID", nativeQuery = true)
+    void addStock(@Param("PRODUCTID") Long PRODUCTID, @Param("STOCK") Long STOCK);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE Product SET STOCK = STOCK-:STOCK WHERE PRODUCTID = :PRODUCTID", nativeQuery = true)
+    void removeStock(@Param("PRODUCTID") Long PRODUCTID, @Param("STOCK") Long STOCK);
+
 }
