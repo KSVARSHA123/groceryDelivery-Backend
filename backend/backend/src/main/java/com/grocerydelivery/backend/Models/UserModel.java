@@ -42,4 +42,5 @@ public class UserModel {
 //        this.USERPASSWORD = USERPASSWORD;
 //        this.USERROLE=USERROLE;
 //    }
+
 }

@@ -33,7 +33,7 @@ public class UserService {
         userRepository.updateUserP(PHONE, USERID);
     }
 
-//    public UserModel Login(String EMAIL,String PASSWORD){
-//        return userRepository.findByEmailAndPassword(EMAIL,PASSWORD);
-//    }
+    public UserModel Login(String EMAIL,String PASSWORD){
+        return userRepository.findByUSEREMAILAndUSERPASSWORD(EMAIL,PASSWORD);
+    }
 }

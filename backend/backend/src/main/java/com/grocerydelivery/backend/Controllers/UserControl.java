@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/USERS")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserControl {
 
     @Autowired
@@ -32,14 +33,14 @@ public class UserControl {
         else{userService.updateUserNP(NAME,PHONE,USERID);}
     }
 
-//    @PostMapping("/login")
-//    public String login(@RequestBody UserModel userModel){
-//        UserModel loggedInUser=userService.Login(userModel.getUSEREMAIL(),userModel.getUSERPASSWORD());
-//        if(loggedInUser!=null){
-//            return "Login Succeccful";
-//        }
-//        else{
-//            return "Invalid Login";
-//        }
-//    }
+    @PostMapping("/login")
+    public String login(@RequestBody UserModel userModel){
+        UserModel loggedInUser=userService.Login(userModel.getUSEREMAIL(),userModel.getUSERPASSWORD());
+        if(loggedInUser!=null){
+            return "Login Succeccful";
+        }
+        else{
+            return "Invalid Login";
+        }
+    }
 }
