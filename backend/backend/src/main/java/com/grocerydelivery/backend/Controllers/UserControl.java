@@ -37,7 +37,7 @@ public class UserControl {
     public String login(@RequestBody UserModel userModel){
         UserModel loggedInUser=userService.Login(userModel.getUSEREMAIL(),userModel.getUSERPASSWORD());
         if(loggedInUser!=null){
-            return "Login Succeccful";
+            return loggedInUser.getUSERROLE();
         }
         else{
             return "Invalid Login";
