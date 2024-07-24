@@ -5,11 +5,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter
-@Getter
 @Data
 @Entity
-@Table(name = "ITEMS")
+@Table(name = "Items")
 public class ItemModel {
 
     @Id

@@ -16,9 +16,14 @@ public interface ItemRepository extends JpaRepository<ItemModel,Long> {
     @Query(value = "INSERT INTO ITEMS (PRODUCTID, QUANTITY, PRICE, USERID) VALUES (:PRODUCTID, :QUANTITY, :PRICE, :USERID)", nativeQuery = true)
     void saveItem(@Param("PRODUCTID") Long PRODUCTID, @Param("QUANTITY") Long QUANTITY, @Param("PRICE") Float PRICE, @Param("USERID") Long USERID);
 
-    @Query("SELECT CASE WHEN COUNT(ITEMID) > 0 THEN true ELSE false END FROM ITEMS WHERE USERID = :USERID AND ORDERID IS NULL")
-    boolean existsUser(@Param("USERID") Long USERID);
+    @Query(value = "SELECT CASE WHEN COUNT(ITEMID) > 0 THEN 1 ELSE 0 END FROM ITEMS WHERE USERID = :USERID AND ORDERID IS NULL",nativeQuery = true)
+    Long existsUser(@Param("USERID") Long USERID);
 
-    @Query("SELECT SUM(CAST(PRICE AS Float)*CAST(QUANTITY AS Float)) AS total FROM ITEMS WHERE USERID= :USERID")
+    @Query(value = "SELECT SUM(CAST(PRICE AS Float)*CAST(QUANTITY AS Float)) AS total FROM ITEMS WHERE USERID= :USERID",nativeQuery = true)
     Float total(@Param("USERID") Long USERID);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE ITEMS SET ORDERID= :ORDERID WHERE USERID= :USERID AND ORDERID IS NULL",nativeQuery = true)
+    void updateOrderid(@Param("USERID") Long USERID,@Param("ORDERID") Long ORDERID);
 }

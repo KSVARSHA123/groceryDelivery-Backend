@@ -71,9 +71,9 @@ public class UserControl {
         return timeSlotRepository.findAll();
     }
 
-    @PutMapping("/OrderPlace")
+    @PutMapping("/OrderPlace/{USERID}")
     public String OrderPlace(@PathVariable Long USERID, @RequestParam Long SLOTID, @RequestParam LocalDate DELIVERYDATE){
-        if(itemRepository.existsUser(USERID)){
+        if(itemRepository.existsUser(USERID)==1){
             Float total=itemRepository.total(USERID);
             OrderModel order=new OrderModel();
             order.setUSERID(USERID);
@@ -83,6 +83,7 @@ public class UserControl {
             order.setDELIVERYDATE(DELIVERYDATE);
             order.setTOTAL(total);
             orderRepository.save(order);
+            itemRepository.updateOrderid(USERID,order.getORDERID());
             return "ORDER PLACED";
         }
         else{
