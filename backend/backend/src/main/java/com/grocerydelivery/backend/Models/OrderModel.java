@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Data
 @Entity
-@Table(name="Order")
+@Table(name="ORDERDETAILS")
 public class OrderModel  {
 
     @Id
@@ -24,17 +24,20 @@ public class OrderModel  {
     @Column (name = "USERID")
     private Long USERID;
 
-    @Column(name = "STATUSID")
-    private Long STATUSID;
+    @Column(name = "ORDERSTATUSID")
+    private Long ORDERSTATUSID;
 
-    @Column(name = "TOTALAMOUNT")
-    private Double TOTALAMOUNT;
+    @Column(name = "TIMESLOTID")
+    private Long TIMESLOTID;
 
     @Column(name = "ORDERDATE")
     private LocalDate ORDERDATE;
 
     @Column(name = "DELIVERYDATE")
     private LocalDate DELIVERYDATE;
+
+    @Column(name = "TOTAL")
+    private Float TOTAL;
 
     @Column(name = "ORDERCONFIRMATION")
     private boolean ORDERCONFIRMATION;

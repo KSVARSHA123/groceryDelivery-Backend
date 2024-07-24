@@ -44,4 +44,6 @@ public interface ProductRepository extends JpaRepository<ProductModel, Long> {
     @Query(value = "UPDATE Product SET STOCK = STOCK-:STOCK WHERE PRODUCTID = :PRODUCTID", nativeQuery = true)
     void removeStock(@Param("PRODUCTID") Long PRODUCTID, @Param("STOCK") Long STOCK);
 
+    @Query(value = "SELECT PRICE FROM Product WHERE PRODUCTID= :PRODUCTID",nativeQuery = true)
+    Float getPRICE(@Param("PRODUCTID") Long PRODUCTID);
 }

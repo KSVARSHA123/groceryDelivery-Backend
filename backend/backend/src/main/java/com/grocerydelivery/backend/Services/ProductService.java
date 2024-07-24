@@ -1,9 +1,12 @@
 package com.grocerydelivery.backend.Services;
 
 import com.grocerydelivery.backend.Models.ProductModel;
+import com.grocerydelivery.backend.Repositories.ItemRepository;
 import com.grocerydelivery.backend.Repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,6 +16,8 @@ public class ProductService {
 
     @Autowired
      private ProductRepository productRepository;
+    @Autowired
+    ItemRepository itemRepository;
 
     public List<ProductModel> getAllProduct(){
         return (List<ProductModel>) productRepository.findAll();
@@ -50,4 +55,8 @@ public class ProductService {
         productRepository.removeStock(PRODUCTID,STOCK);
     }
 
+    public void addToCart(Long USERID,Long PRODUCTID,Long QUANTITY){
+        Float PRICE=productRepository.getPRICE(PRODUCTID);
+        itemRepository.saveItem(PRODUCTID,QUANTITY,PRICE,USERID);
+    }
 }

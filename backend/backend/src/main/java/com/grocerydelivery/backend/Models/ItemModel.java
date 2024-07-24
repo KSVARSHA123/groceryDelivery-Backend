@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Data
 @Entity
-@Table(name = "Item")
+@Table(name = "ITEMS")
 public class ItemModel {
 
     @Id
@@ -24,10 +24,13 @@ public class ItemModel {
     private Long PRODUCTID;
 
     @Column(name="QUANTITY")
-    private Integer QUNATITY;
+    private Long QUNATITY;
 
     @Column(name="PRICE")
-    private Double PRICE;
+    private Float PRICE;
+
+    @Column(name="USERID")
+    private Long USERID;
 
     public ItemModel(){
 
