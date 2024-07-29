@@ -58,6 +58,4 @@ public class ProductControl {
         productService.removeStock(PRODUCTID,STOCK);
     }
 
-
-
 }

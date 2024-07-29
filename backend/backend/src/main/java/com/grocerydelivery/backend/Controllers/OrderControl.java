@@ -1,12 +1,11 @@
 package com.grocerydelivery.backend.Controllers;
 
 import com.grocerydelivery.backend.Models.OrderModel;
+import com.grocerydelivery.backend.Repositories.OrderRepository;
+import com.grocerydelivery.backend.Repositories.PaymentRepository;
 import com.grocerydelivery.backend.Services.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,17 +15,30 @@ public class OrderControl {
 
     @Autowired
     OrderService orderService;
+    @Autowired
+    OrderRepository orderRepository;
 
     @GetMapping("/getOrders")
-    public List<OrderModel> getAllOrders(){
+    public List<OrderModel> getAllOrders() {
         return orderService.getAllOrders();
     }
 
     @GetMapping("/getOrder/{ORDERID}")
-    public OrderModel getOrder(@PathVariable Long ORDERID){
+    public OrderModel getOrder(@PathVariable Long ORDERID) {
         return orderService.getOrder(ORDERID);
     }
 
-
+    @PutMapping("/updateStatus/{USERID}")
+    public void updateStatus(@PathVariable Long ORDERID) {
+        if (orderRepository.viewStatus(ORDERID) == 1) {
+            orderService.updateStatus1(ORDERID);
+        }
+        else if(orderRepository.viewStatus(ORDERID) == 2){
+            orderRepository.updateStatus2(ORDERID);
+        }
+        else if(orderRepository.viewStatus(ORDERID) == 3){
+            orderRepository.updateStatus3(ORDERID);
+        }
+    }
 
 }

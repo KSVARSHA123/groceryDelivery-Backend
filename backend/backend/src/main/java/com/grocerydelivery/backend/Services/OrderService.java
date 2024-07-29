@@ -20,4 +20,9 @@ public class OrderService {
     public OrderModel getOrder( Long ORDERID){
         return orderRepository.findById(ORDERID).orElse(null);
     }
+
+    public void updateStatus1(Long ORDERID){
+        orderRepository.updateStatus1(ORDERID);
+    }
+
 }

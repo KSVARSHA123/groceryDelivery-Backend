@@ -5,8 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Repository
 public interface ItemRepository extends JpaRepository<ItemModel,Long> {
@@ -26,4 +29,20 @@ public interface ItemRepository extends JpaRepository<ItemModel,Long> {
     @Modifying
     @Query(value = "UPDATE ITEMS SET ORDERID= :ORDERID WHERE USERID= :USERID AND ORDERID IS NULL",nativeQuery = true)
     void updateOrderid(@Param("USERID") Long USERID,@Param("ORDERID") Long ORDERID);
+
+    @Query(value = "SELECT P.PRODUCTNAME,I.QUANTITY,I.PRICE FROM ITEMS I JOIN PRODUCT P ON I.PRODUCTID=P.PRODUCTID WHERE I.USERID= :USERID AND I.ORDERID IS NULL",nativeQuery = true)
+    List<String> showItems(@Param("USERID") Long USERID);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE ITEMS SET QUANTITY = QUANTITY - :QUANTITY WHERE USERID = :USERID AND ORDERID = :ORDERID AND QUANTITY >= :QUANTITY AND PRODUCTID= :PRODUCTID",nativeQuery = true)
+    void decreaseItemQuantity(@Param("USERID") Long USERID, @Param("ORDERID") Long ORDERID,@Param("QUANTITY") Long QUANTITY,@Param("PRODUCTID") Long PRODUCTID);
+
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM ITEMS WHERE USERID = :USERID AND ORDERID = :ORDERID AND PRODUCTID= :PRODUCTID",nativeQuery = true)
+    void deleteItem(@Param("USERID") Long USERID, @Param("ORDERID") Long ORDERID,@Param("PRODUCTID") Long PRODUCTID);
+
+    @Query(value = "SELECT p.PRODUCTNAME, p.PRICE, i.QUANTITY FROM ITEMS i JOIN Product p ON i.PRODUCTID = p.PRODUCTID WHERE i.ORDERID = :ORDERID", nativeQuery = true)
+    List<Object[]> findItemsByOrderId(@Param("ORDERID") Long ORDERID);
 }
