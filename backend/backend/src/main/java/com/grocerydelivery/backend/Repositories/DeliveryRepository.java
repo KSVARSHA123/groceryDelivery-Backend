@@ -29,6 +29,9 @@ public interface DeliveryRepository extends JpaRepository<DeliveryModel,Long> {
     @Query(value = "SELECT ORDERID FROM DELIVERY WHERE DELIVERYPERSONID= :DELIVERYPERSONID",nativeQuery = true)
     Long getOrderid(@Param("DELIVERYPERSONID") Long DELIVERYPERSONID);
 
+    @Query(value = "SELECT USERID FROM DELIVERY WHERE DELIVERYPERSONID= :DELIVERYPERSONID",nativeQuery = true)
+    Long getUserid(@Param("DELIVERYPERSONID") Long DELIVERYPERSONID);
+
     @Transactional
     @Modifying
     @Query(value = "INSERT INTO DELIVERY VALUES(:DELIVERYPERSONID,:AVAILABILITY,:ORDERID,:USERID)",nativeQuery = true)

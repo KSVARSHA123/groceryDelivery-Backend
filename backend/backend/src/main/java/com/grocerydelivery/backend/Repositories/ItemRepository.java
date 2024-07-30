@@ -45,4 +45,8 @@ public interface ItemRepository extends JpaRepository<ItemModel,Long> {
 
     @Query(value = "SELECT p.PRODUCTNAME, p.PRICE, i.QUANTITY FROM ITEMS i JOIN Product p ON i.PRODUCTID = p.PRODUCTID WHERE i.ORDERID = :ORDERID", nativeQuery = true)
     List<Object[]> findItemsByOrderId(@Param("ORDERID") Long ORDERID);
-}
+
+    @Query(value = "SELECT P.VENDORID FROM ITEMS I JOIN PRODUCT P ON I.PRODUCTID=P.PRODUCTID WHERE ORDERID= :ORDERID LIMIT 1",nativeQuery = true)
+    Long getVendorid(@Param("ORDERID") Long ORDERID);
+
+    }

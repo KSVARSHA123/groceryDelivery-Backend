@@ -24,4 +24,7 @@ public interface PaymentRepository extends JpaRepository<PaymentModel, Long> {
 
     @Query(value = "SELECT PAYMENTSTATUS FROM PAYMENT WHERE ORDERID= :ORDERID",nativeQuery = true)
     boolean getPaymentStatus(@Param("ORDERID") Long ORDERID);
+
+    @Query(value = "SELECT PAYMENTMETHOD FROM PAYMENT WHERE ORDERID= :ORDERID",nativeQuery = true)
+    String getPaymentMode(@Param("ORDERID") Long ORDERID);
 }

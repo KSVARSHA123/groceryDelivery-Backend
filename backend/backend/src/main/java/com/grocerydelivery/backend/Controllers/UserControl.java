@@ -3,6 +3,7 @@ package com.grocerydelivery.backend.Controllers;
 import com.grocerydelivery.backend.Models.*;
 import com.grocerydelivery.backend.Repositories.*;
 import com.grocerydelivery.backend.Services.AddressService;
+import com.grocerydelivery.backend.Services.HashUtil;
 import com.grocerydelivery.backend.Services.ProductService;
 import com.grocerydelivery.backend.Services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,6 +44,8 @@ public class UserControl {
     DeliveryRepository deliveryRepository;
     @Autowired
     OrderControl orderControl;
+    @Autowired
+    AddressRepository addressRepository;
 
     @GetMapping("/getAllUsers")
     public List<UserModel> getAllUsers() {
@@ -67,7 +70,7 @@ public class UserControl {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody UserModel userModel){
-        UserModel loggedInUser = userService.Login(userModel.getUSEREMAIL(), userModel.getUSERPASSWORD());
+        UserModel loggedInUser = userService.Login(userModel.getUSEREMAIL(), HashUtil.hashPassword(userModel.getUSERPASSWORD()));
         if (loggedInUser != null) {
             Map<String, Object> response = new HashMap<>();
             response.put("userid", loggedInUser.getUSERID()); // Return the userid
@@ -107,7 +110,7 @@ public class UserControl {
             order.setTOTAL(total);
             orderRepository.save(order);
             itemRepository.updateOrderid(USERID, order.getORDERID());
-            return "ORDER PLACED";
+            return order.getORDERID().toString();
         } else {
             return "No Items in the cart";
         }
@@ -197,6 +200,23 @@ public class UserControl {
         }
     }
 
+    @GetMapping("/showDelivery")
+    private ResponseEntity<Map<String, Object>> showDelivery(@PathVariable Long DELIVERYPERSONID){
+        Long ORDERID=deliveryRepository.getOrderid(DELIVERYPERSONID);
+        Long USERID=deliveryRepository.getUserid(DELIVERYPERSONID);
+        Long VENDORID=itemRepository.getVendorid(ORDERID);
+        Float TOTAL=orderRepository.getAMOUNT(ORDERID);
+        String PAYMENTMETHOD=paymentRepository.getPaymentMode(ORDERID);
+        String VENDORADDRESS=addressRepository.getAddress(VENDORID);
+        String USERADDRESS=addressRepository.getAddress(USERID);
+        Map<String, Object> r = new HashMap<>();
+        r.put("pickup",VENDORADDRESS);
+        r.put("drop",USERADDRESS);
+        r.put("total",TOTAL);
+        r.put("paymentmethod",PAYMENTMETHOD);
+        return ResponseEntity.ok(r);
+    }
+
     @PutMapping("/updateAvailability")
     private void updateAvailability(@PathVariable Long DELIVERYPERSONID,@PathVariable String delivered){
         if(delivered.equals("yes")){
@@ -206,8 +226,14 @@ public class UserControl {
         }
     }
 
-    @GetMapping("/showOrder")
+    @GetMapping("/showOrder/{ORDERID}")
     private List<Object[]> showOrder(@PathVariable Long ORDERID){
-        return itemRepository.findItemsByOrderId(ORDERID);
+        Float TOTAL=orderRepository.getAMOUNT(ORDERID);
+        List<Object[]> a=itemRepository.findItemsByOrderId(ORDERID);
+        Object[] totalArray = new Object[] {"TOTAL:", TOTAL.toString()};
+        a.addLast(totalArray);
+        return a;
     }
+
+
 }

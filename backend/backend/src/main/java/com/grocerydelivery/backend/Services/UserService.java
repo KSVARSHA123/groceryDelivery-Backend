@@ -18,6 +18,8 @@ public class UserService {
     }
 
     public UserModel addUser(UserModel userModel){
+        String hashedPassword = HashUtil.hashPassword(userModel.getUSERPASSWORD());
+        userModel.setUSERPASSWORD(hashedPassword);
         return userRepository.save(userModel);
     }
 
