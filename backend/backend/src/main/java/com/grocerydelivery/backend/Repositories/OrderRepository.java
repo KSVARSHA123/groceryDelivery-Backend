@@ -13,13 +13,13 @@ public interface OrderRepository extends JpaRepository<OrderModel,Long> {
 
     @Transactional
     @Modifying
-    @Query(value ="UPDATE ORDERDETAILS SET ORDERCONFIRMATION= :CONFIRM where USERID= :USERID AND ORDERSTATUSID=1",nativeQuery = true)
-    void confirmT(@Param("USERID") Long USERID,@Param("CONFIRM") Long CONFIRM);
+    @Query(value ="UPDATE ORDERDETAILS SET ORDERCONFIRMATION= :CONFIRM where ORDERID= :ORDERID AND ORDERSTATUSID=1",nativeQuery = true)
+    void confirmT(@Param("ORDERID") Long ORDERID,@Param("CONFIRM") Long CONFIRM);
 
     @Transactional
     @Modifying
-    @Query(value ="UPDATE ORDERDETAILS SET ORDERCONFIRMATION= :CONFIRM,ORDERSTATUSID=5 where USERID= :USERID AND ORDERSTATUSID=1",nativeQuery = true)
-    void confirmF(@Param("USERID") Long USERID,@Param("CONFIRM") Long CONFIRM);
+    @Query(value ="UPDATE ORDERDETAILS SET ORDERCONFIRMATION= :CONFIRM,ORDERSTATUSID=5 where ORDERID= :ORDERID AND ORDERSTATUSID=1",nativeQuery = true)
+    void confirmF(@Param("ORDERID") Long ORDERID,@Param("CONFIRM") Long CONFIRM);
 
     @Query(value = "SELECT ORDERSTATUSID FROM ORDERDETAILS WHERE ORDERID= :ORDERID",nativeQuery = true)
     Long viewStatus(@Param("ORDERID") Long ORDERID);

@@ -92,6 +92,15 @@ public class UserControl {
         productService.addToCart(USERID, PRODUCTID, QUANTITY);
     }
 
+    @PutMapping("/removeFromCart/{USERID}")
+    public void removeFromCart(@PathVariable Long USERID,@RequestParam Long PRODUCTID,@RequestParam(required = false) Long QUANTITY){
+        if(QUANTITY==null){itemRepository.removeFromCart(USERID,PRODUCTID);}
+        else{
+            if(itemRepository.checkItem(USERID,PRODUCTID)>=QUANTITY){
+                itemRepository.removeFromCart(USERID,PRODUCTID,QUANTITY);}
+        }
+    }
+
     @GetMapping("/getSlot")
     public List<TimeSlotModel> getSlot() {
         return timeSlotRepository.findAll();
@@ -125,17 +134,17 @@ public class UserControl {
         return a;
     }
 
+
     @PutMapping("/confirmOrder/{USERID}")
-    public String confirmOrder(@PathVariable Long USERID, @RequestParam String confirm) {
+    public String confirmOrder(@PathVariable Long ORDERID, @RequestParam String confirm) {
         if (confirm.equals("yes")) {
-            orderRepository.confirmT(USERID, 1L);
+            orderRepository.confirmT(ORDERID, 1L);
             return "ORDER CONFIRMED";
         } else {
-            orderRepository.confirmF(USERID, 0L);
+            orderRepository.confirmF(ORDERID, 0L);
             return "ORDER CANCELLED";
         }
     }
-
 
     @PutMapping("/modifyCart/{ORDERID}")
     private void modifyCart(@PathVariable Long ORDERID, @RequestParam Long USERID, @RequestParam String action, @RequestParam(required = false) Long QUANTITY, @RequestParam(required = false) Long PRODUCTID) {

@@ -49,4 +49,16 @@ public interface ItemRepository extends JpaRepository<ItemModel,Long> {
     @Query(value = "SELECT P.VENDORID FROM ITEMS I JOIN PRODUCT P ON I.PRODUCTID=P.PRODUCTID WHERE ORDERID= :ORDERID LIMIT 1",nativeQuery = true)
     Long getVendorid(@Param("ORDERID") Long ORDERID);
 
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM ITEMS WHERE USERID= :USERID AND PRODUCTID= :PRODUCTID AND ORDERID IS NULL",nativeQuery = true)
+    void removeFromCart(@Param("USERID") Long USERID,@Param("PRODUCTID") Long PRODUCTID);
+
+    @Query(value = "SELECT QUANTITY FROM ITEMS WHERE USERID= :USERID AND PRODUCTID= :PRODUCTID AND ORDERID IS NULL",nativeQuery = true)
+    Long checkItem(@Param("USERID") Long USERID,@Param("PRODUCTID") Long PRODUCTID);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE ITEMS SET QUANTITY= QUANTITY-:QUANTITY WHERE USERID= :USERID AND PRODUCTID= :PRODUCTID AND ORDERID IS NULL",nativeQuery = true)
+    void removeFromCart(@Param("USERID") Long USERID,@Param("PRODUCTID") Long PRODUCTID,@Param("QUANTITY") Long QUANTITY);
     }
