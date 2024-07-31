@@ -47,4 +47,7 @@ public interface ProductRepository extends JpaRepository<ProductModel, Long> {
     @Query(value = "SELECT PRICE FROM Product WHERE PRODUCTID= :PRODUCTID",nativeQuery = true)
     Float getPRICE(@Param("PRODUCTID") Long PRODUCTID);
 
+    @Query(value = "SELECT * FROM Product WHERE VENDORID= :VENDORID",nativeQuery = true)
+    ProductModel showProduct(@Param("VENDORID") Long VENDORID);
+
 }

@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface ItemRepository extends JpaRepository<ItemModel,Long> {
 
-    @Query(value = "SELECT COUNT(*) > 0 FROM ITEMS WHERE USERID = :USERID AND PRODUCTID = :PRODUCTID AND ORDERID IS NULL", nativeQuery = true)
+    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END FROM ITEMS WHERE USERID = :USERID AND PRODUCTID = :PRODUCTID AND ORDERID IS NULL", nativeQuery = true)
     boolean existsByUserIdProductId(@Param("USERID") Long USERID, @Param("PRODUCTID") Long PRODUCTID);
 
     @Transactional

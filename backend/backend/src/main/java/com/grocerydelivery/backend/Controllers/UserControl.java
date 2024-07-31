@@ -46,11 +46,17 @@ public class UserControl {
     @GetMapping("/getAllUsers")
     public List<UserModel> getAllUsers() {
         return userService.getAllUsers();
+
     }
 
     @PostMapping("/addUser")
-    public UserModel addUser(@RequestBody UserModel userModel) {
-        return userService.addUser(userModel);
+    public ResponseEntity<Map<String, Object>> addUser(@RequestBody UserModel userModel) {
+        UserModel a=userService.addUser(userModel);
+        Map<String, Object> response = new HashMap<>();
+        response.put("userid", a.getUSERID()); // Return the userid
+        response.put("userrole", a.getUSERROLE());
+        response.put("userid", a.getUSERID());
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{USERID}")
@@ -259,6 +265,7 @@ public class UserControl {
             order.put("startTime", result[3]);
             order.put("endTime", result[4]);
             order.put("total",result[5]);
+            order.put("orderDate",result[6]);
             orders.add(order);
         }
 
@@ -284,4 +291,8 @@ public class UserControl {
         return orders;
     }
 
+//    @PutMapping("/selectAddress/{USERID}")
+//    public ResponseEntity<String> selectAddress(@PathVariable Long USERID){
+//
+//    }
 }

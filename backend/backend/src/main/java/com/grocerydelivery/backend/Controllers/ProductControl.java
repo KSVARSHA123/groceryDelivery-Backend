@@ -1,6 +1,7 @@
 package com.grocerydelivery.backend.Controllers;
 
 import com.grocerydelivery.backend.Models.ProductModel;
+import com.grocerydelivery.backend.Repositories.ProductRepository;
 import com.grocerydelivery.backend.Services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,8 @@ public class ProductControl {
 
     @Autowired
     ProductService productService;
+    @Autowired
+    ProductRepository productRepository;
 
     @GetMapping("/getAllproduct")
     public List<ProductModel> getAll(){
@@ -58,4 +61,8 @@ public class ProductControl {
         productService.removeStock(PRODUCTID,STOCK);
     }
 
+    @GetMapping("/showProduct/{VENDORID}")
+    public ProductModel showProduct(@PathVariable Long VENDORID){
+        return productRepository.showProduct(VENDORID);
+    }
 }

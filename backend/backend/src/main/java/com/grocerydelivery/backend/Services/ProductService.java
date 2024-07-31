@@ -57,11 +57,7 @@ public class ProductService {
 
     public void addToCart(Long USERID, Long PRODUCTID, Long QUANTITY) {
         Float PRICE = productRepository.getPRICE(PRODUCTID);
-        if (itemRepository.existsByUserIdProductId(USERID, PRODUCTID)) {
-            itemRepository.updateQuantity(USERID, PRODUCTID, QUANTITY);
-        } else {
-            itemRepository.saveItem(PRODUCTID, QUANTITY, PRICE, USERID);
-        }
+        itemRepository.saveItem(PRODUCTID, QUANTITY, PRICE, USERID);
     }
 
 
