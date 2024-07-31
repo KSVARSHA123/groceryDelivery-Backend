@@ -14,6 +14,14 @@ import java.util.List;
 @Repository
 public interface ItemRepository extends JpaRepository<ItemModel,Long> {
 
+    @Query(value = "SELECT COUNT(*) > 0 FROM ITEMS WHERE USERID = :USERID AND PRODUCTID = :PRODUCTID AND ORDERID IS NULL", nativeQuery = true)
+    boolean existsByUserIdProductId(@Param("USERID") Long USERID, @Param("PRODUCTID") Long PRODUCTID);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE ITEMS SET QUANTITY = QUANTITY + :QUANTITY WHERE USERID = :USERID AND PRODUCTID = :PRODUCTID AND ORDERID IS NULL", nativeQuery = true)
+    void updateQuantity(@Param("USERID") Long USERID, @Param("PRODUCTID") Long PRODUCTID, @Param("QUANTITY") Long QUANTITY);
+
     @Transactional
     @Modifying
     @Query(value = "INSERT INTO ITEMS (PRODUCTID, QUANTITY, PRICE, USERID) VALUES (:PRODUCTID, :QUANTITY, :PRICE, :USERID)", nativeQuery = true)
@@ -56,6 +64,20 @@ public interface ItemRepository extends JpaRepository<ItemModel,Long> {
 
     @Query(value = "SELECT QUANTITY FROM ITEMS WHERE USERID= :USERID AND PRODUCTID= :PRODUCTID AND ORDERID IS NULL",nativeQuery = true)
     Long checkItem(@Param("USERID") Long USERID,@Param("PRODUCTID") Long PRODUCTID);
+
+    @Query(value = "SELECT * FROM ITEMS WHERE ORDERID = :ORDERID",nativeQuery = true)
+    List<ItemModel> findByOrderId(@Param("ORDERID") Long ORDERID);
+
+    @Query(value = "SELECT QUANTITY FROM ITEMS WHERE USERID = :USERID AND PRODUCTID = :PRODUCTID AND ORDERID IS NULL", nativeQuery = true)
+    Long existsByUserIdAndProductIdWithoutOrderId(@Param("USERID") Long USERID, @Param("PRODUCTID") Long PRODUCTID);
+
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM ITEMS WHERE USERID= :USERID AND PRODUCTID= :PRODUCTID AND ORDERID IS NULL",nativeQuery = true)
+    void deleteItem(@Param("USERID") Long USERID,@Param("PRODUCTID") Long PRODUCTID);
+
+    @Query(value = "SELECT * FROM ITEMS WHERE USERID= :USERID AND ORDERID IS NULL",nativeQuery = true)
+    List<ItemModel> findNoOrderid(@Param("USERID") Long USERID);
 
     @Transactional
     @Modifying

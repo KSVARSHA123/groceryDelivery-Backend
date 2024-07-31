@@ -2,10 +2,7 @@ package com.grocerydelivery.backend.Controllers;
 
 import com.grocerydelivery.backend.Models.*;
 import com.grocerydelivery.backend.Repositories.*;
-import com.grocerydelivery.backend.Services.AddressService;
-import com.grocerydelivery.backend.Services.HashUtil;
-import com.grocerydelivery.backend.Services.ProductService;
-import com.grocerydelivery.backend.Services.UserService;
+import com.grocerydelivery.backend.Services.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -14,10 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/USERS")
@@ -38,6 +32,8 @@ public class UserControl {
     PaymentRepository paymentRepository;
     @Autowired
     AddressService addressService;
+    @Autowired
+    ItemService itemService;
     @Autowired
     UserRepository userRepository;
     @Autowired
@@ -107,7 +103,7 @@ public class UserControl {
     }
 
     @PutMapping("/OrderPlace/{USERID}")
-    public String OrderPlace(@PathVariable Long USERID, @RequestParam Long SLOTID, @RequestParam LocalDate DELIVERYDATE) {
+    public ResponseEntity<String> OrderPlace(@PathVariable Long USERID, @RequestParam Long SLOTID, @RequestParam LocalDate DELIVERYDATE) {
         if (itemRepository.existsUser(USERID) == 1) {
             Float total = itemRepository.total(USERID);
             OrderModel order = new OrderModel();
@@ -119,9 +115,9 @@ public class UserControl {
             order.setTOTAL(total);
             orderRepository.save(order);
             itemRepository.updateOrderid(USERID, order.getORDERID());
-            return order.getORDERID().toString();
+            return ResponseEntity.ok(order.getORDERID().toString());
         } else {
-            return "No Items in the cart";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No Items in the cart");
         }
     }
 
@@ -146,10 +142,16 @@ public class UserControl {
         }
     }
 
+    @GetMapping("/getItemsByOrder/{ORDERID}")
+    public List<ItemModel> getItemsByOrder(@PathVariable Long ORDERID, @RequestParam Long USERID) {
+        return itemService.getItemsByOrderIdCheckCart(ORDERID, USERID);
+    }
+
+
     @PutMapping("/modifyCart/{ORDERID}")
     private void modifyCart(@PathVariable Long ORDERID, @RequestParam Long USERID, @RequestParam String action, @RequestParam(required = false) Long QUANTITY, @RequestParam(required = false) Long PRODUCTID) {
         if (action.equals("add")) {
-            itemRepository.updateOrderid(USERID, ORDERID);
+            getItemsByOrder(USERID, ORDERID);
         } else if (action.equals("delete")) {
             if (QUANTITY != null && PRODUCTID != null && QUANTITY > 0) {
                 itemRepository.decreaseItemQuantity(USERID, ORDERID, QUANTITY, PRODUCTID);
@@ -201,7 +203,7 @@ public class UserControl {
             return "Delivery Person Already Exists";
         }
     }
-    @PutMapping("/assignDelivery")
+    @PutMapping("/assignDelivery/{ORDERID}")
     private void assignDelivery(@PathVariable Long ORDERID){
         Long USERID=orderRepository.getUSERID(ORDERID);
         if(deliveryRepository.availability()>0){
@@ -209,7 +211,7 @@ public class UserControl {
         }
     }
 
-    @GetMapping("/showDelivery")
+    @GetMapping("/showDelivery/{DELIVERYPERSONID}")
     private ResponseEntity<Map<String, Object>> showDelivery(@PathVariable Long DELIVERYPERSONID){
         Long ORDERID=deliveryRepository.getOrderid(DELIVERYPERSONID);
         Long USERID=deliveryRepository.getUserid(DELIVERYPERSONID);
@@ -226,7 +228,7 @@ public class UserControl {
         return ResponseEntity.ok(r);
     }
 
-    @PutMapping("/updateAvailability")
+    @PutMapping("/updateAvailability/{DELIVERYPERSONID}")
     private void updateAvailability(@PathVariable Long DELIVERYPERSONID,@PathVariable String delivered){
         if(delivered.equals("yes")){
             Long ORDERID=deliveryRepository.getOrderid(DELIVERYPERSONID);
@@ -244,5 +246,42 @@ public class UserControl {
         return a;
     }
 
+    @GetMapping("/showOrders/{USERID}")
+    public ResponseEntity<List<Map<String, Object>>> showOrders(@PathVariable Long USERID) {
+        List<Object[]> results = orderRepository.showOrders(USERID);
+        List<Map<String, Object>> orders = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Map<String, Object> order = new HashMap<>();
+            order.put("orderconfirmation", result[0]);
+            order.put("orderStatus", result[1]);
+            order.put("deliveryDate", result[2]);
+            order.put("startTime", result[3]);
+            order.put("endTime", result[4]);
+            order.put("total",result[5]);
+            orders.add(order);
+        }
+
+        return ResponseEntity.ok(orders);
+    }
+
+    @GetMapping("/getOrdersByVendor/{VENDORID}")
+    public List<Map<String, Object>> getOrdersByVendor(@PathVariable Long VENDORID) {
+        List<Object[]> results = orderRepository.findOrdersByVendorId(VENDORID);
+        List<Map<String, Object>> orders = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Map<String, Object> order = new HashMap<>();
+            order.put("productname", result[0]);
+            order.put("orderStatus", result[1]);
+            order.put("deliveryDate", result[2]);
+            order.put("startTime", result[3]);
+            order.put("endTime", result[4]);
+            order.put("total", result[5]);
+            orders.add(order);
+        }
+
+        return orders;
+    }
 
 }

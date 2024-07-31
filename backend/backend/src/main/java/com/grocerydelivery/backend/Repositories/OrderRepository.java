@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public interface OrderRepository extends JpaRepository<OrderModel,Long> {
 
@@ -49,4 +51,10 @@ public interface OrderRepository extends JpaRepository<OrderModel,Long> {
     @Modifying
     @Query(value = "UPDATE PAYMENTCONFIRMATION= :PAYMENTCONFIRMATION WHERE ORDERID= :ORDERID",nativeQuery = true)
     void updatePayment(@Param("ORDERID") Long ORDERID,@Param("PAYMENTCONFIRMATION") boolean PAYMENTCONFIRMATION);
+
+    @Query(value = "SELECT o.ORDERCONFIRMATION,s.ORDERSTATUS, o.DELIVERYDATE, t.STARTTIME, t.ENDTIME ,o.TOTAL FROM ORDERDETAILS o JOIN ORDERSTATUS s ON o.ORDERSTATUSID = s.STATUSID JOIN TIMESLOT t ON o.TIMESLOTID = t.SLOTID WHERE o.USERID = :USERID", nativeQuery = true)
+    List<Object[]> showOrders(@Param("USERID") Long USERID);
+
+    @Query(value = "SELECT o.ORDERID, s.ORDERSTATUS, o.DELIVERYDATE, t.STARTTIME, t.ENDTIME ,o.TOTAL FROM ORDERDETAILS o JOIN ORDERSTATUS s ON o.ORDERSTATUSID = s.STATUSID JOIN TIMESLOT t ON o.TIMESLOTID = t.SLOTID JOIN ITEMS i ON o.ORDERID = i.ORDERID WHERE i.VENDORID = :VENDORID", nativeQuery = true)
+    List<Object[]> findOrdersByVendorId(@Param("VENDORID") Long VENDORID);
 }
