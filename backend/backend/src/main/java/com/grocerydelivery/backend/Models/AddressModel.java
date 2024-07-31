@@ -2,7 +2,11 @@ package com.grocerydelivery.backend.Models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Data
 @Table(name = "ADDRESS")
 @Entity

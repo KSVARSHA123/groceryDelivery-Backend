@@ -30,7 +30,7 @@ public class OrderControl {
         return orderService.getOrder(ORDERID);
     }
 
-    @PutMapping("/updateStatus/{USERID}")
+    @PutMapping("/updateStatus/{ORDERID}")
     public void updateStatus(@PathVariable Long ORDERID) {
         if (orderRepository.viewStatus(ORDERID) == 1) {
             orderService.updateStatus1(ORDERID);

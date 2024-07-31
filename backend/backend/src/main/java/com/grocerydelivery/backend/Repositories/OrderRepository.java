@@ -28,7 +28,7 @@ public interface OrderRepository extends JpaRepository<OrderModel,Long> {
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE ORDERDETAILS od JOIN TIMESLOT s ON od.TIMESLOTID = s.SLOTID SET od.ORDERSTATUSID = od.ORDERSTATUSID+1 WHERE od.ORDERID = :ORDERID  AND od.DELIVERYDATE = DATE(CURRENT_DATE) AND (TIME(NOW()) BETWEEN s.STARTTIME AND s.ENDTIME) AND od.ORDERCONFIRMATION = true",nativeQuery = true)
+    @Query(value = "UPDATE ORDERDETAILS od JOIN TIMESLOT s ON od.TIMESLOTID = s.SLOTID SET od.ORDERSTATUSID = 1 WHERE od.ORDERID = :ORDERID  AND od.DELIVERYDATE = DATE(CURRENT_DATE) AND (TIME(NOW()) BETWEEN s.STARTTIME AND s.ENDTIME) AND od.ORDERCONFIRMATION = true",nativeQuery = true)
     void updateStatus1(@Param("ORDERID") Long ORDERID);
 
     @Transactional

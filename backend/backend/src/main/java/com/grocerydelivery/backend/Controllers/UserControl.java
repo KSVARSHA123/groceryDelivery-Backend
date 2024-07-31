@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -109,7 +110,7 @@ public class UserControl {
     }
 
     @PutMapping("/OrderPlace/{USERID}")
-    public ResponseEntity<String> OrderPlace(@PathVariable Long USERID, @RequestParam Long SLOTID, @RequestParam LocalDate DELIVERYDATE) {
+    public ResponseEntity<String> OrderPlace(@PathVariable Long USERID, @RequestParam Long SLOTID, @RequestParam LocalDate DELIVERYDATE,@RequestParam Long ADDRESSID) {
         if (itemRepository.existsUser(USERID) == 1) {
             Float total = itemRepository.total(USERID);
             OrderModel order = new OrderModel();
@@ -119,6 +120,7 @@ public class UserControl {
             order.setORDERDATE(LocalDate.now());
             order.setDELIVERYDATE(DELIVERYDATE);
             order.setTOTAL(total);
+            order.setADDRESSID(ADDRESSID);
             orderRepository.save(order);
             itemRepository.updateOrderid(USERID, order.getORDERID());
             return ResponseEntity.ok(order.getORDERID().toString());
@@ -137,7 +139,7 @@ public class UserControl {
     }
 
 
-    @PutMapping("/confirmOrder/{USERID}")
+    @PutMapping("/confirmOrder/{ORDERID}")
     public String confirmOrder(@PathVariable Long ORDERID, @RequestParam String confirm) {
         if (confirm.equals("yes")) {
             orderRepository.confirmT(ORDERID, 1L);
@@ -217,22 +219,22 @@ public class UserControl {
         }
     }
 
-    @GetMapping("/showDelivery/{DELIVERYPERSONID}")
-    private ResponseEntity<Map<String, Object>> showDelivery(@PathVariable Long DELIVERYPERSONID){
-        Long ORDERID=deliveryRepository.getOrderid(DELIVERYPERSONID);
-        Long USERID=deliveryRepository.getUserid(DELIVERYPERSONID);
-        Long VENDORID=itemRepository.getVendorid(ORDERID);
-        Float TOTAL=orderRepository.getAMOUNT(ORDERID);
-        String PAYMENTMETHOD=paymentRepository.getPaymentMode(ORDERID);
-        String VENDORADDRESS=addressRepository.getAddress(VENDORID);
-        String USERADDRESS=addressRepository.getAddress(USERID);
-        Map<String, Object> r = new HashMap<>();
-        r.put("pickup",VENDORADDRESS);
-        r.put("drop",USERADDRESS);
-        r.put("total",TOTAL);
-        r.put("paymentmethod",PAYMENTMETHOD);
-        return ResponseEntity.ok(r);
-    }
+//    @GetMapping("/showDelivery/{DELIVERYPERSONID}")
+//    private ResponseEntity<Map<String, Object>> showDelivery(@PathVariable Long DELIVERYPERSONID){
+//        Long ORDERID=deliveryRepository.getOrderid(DELIVERYPERSONID);
+//        Long USERID=deliveryRepository.getUserid(DELIVERYPERSONID);
+//        Long VENDORID=itemRepository.getVendorid(ORDERID);
+//        Float TOTAL=orderRepository.getAMOUNT(ORDERID);
+//        String PAYMENTMETHOD=paymentRepository.getPaymentMode(ORDERID);
+//        String VENDORADDRESS=addressRepository.getAddress(VENDORID);
+//        String USERADDRESS=addressRepository.getAddress(USERID);
+//        Map<String, Object> r = new HashMap<>();
+//        r.put("pickup",VENDORADDRESS);
+//        r.put("drop",USERADDRESS);
+//        r.put("total",TOTAL);
+//        r.put("paymentmethod",PAYMENTMETHOD);
+//        return ResponseEntity.ok(r);
+//    }
 
     @PutMapping("/updateAvailability/{DELIVERYPERSONID}")
     private void updateAvailability(@PathVariable Long DELIVERYPERSONID,@PathVariable String delivered){
@@ -291,8 +293,21 @@ public class UserControl {
         return orders;
     }
 
-//    @PutMapping("/selectAddress/{USERID}")
-//    public ResponseEntity<String> selectAddress(@PathVariable Long USERID){
-//
-//    }
+    @GetMapping("/showAddress/{USERID}")
+    public ResponseEntity<List<Map<String, Object>>> showAddress(@PathVariable Long USERID){
+        List<Object[]> results=addressRepository.getAddress(USERID);
+        if(results.size()>0) {
+            List<Map<String, Object>> addresses = new ArrayList<>();
+            for (Object[] result : results) {
+                Map<String, Object> address = new HashMap<>();
+                address.put("Addressid", result[0]);
+                address.put("Address", result[1]);
+                addresses.add(address);
+            }
+            return ResponseEntity.ok(addresses);
+        }
+        else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ArrayList<>());
+        }
+    }
 }

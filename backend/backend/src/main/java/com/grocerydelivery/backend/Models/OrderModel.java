@@ -45,6 +45,8 @@ public class OrderModel  {
     @Column(name = "PAYMENTCONFIRMATION")
     private boolean PAYMENTCONFIRMATION;
 
+    @Column(name = "ADDRESSID")
+    private Long ADDRESSID;
 
     public OrderModel(){
 
