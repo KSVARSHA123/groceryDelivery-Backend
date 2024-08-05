@@ -17,6 +17,8 @@ public class OrderControl {
 //    OrderService orderService;
     @Autowired
     OrderRepository orderRepository;
+    @Autowired
+    UserControl userControl;
 //
 //    @GetMapping("/getOrders")
 //    public List<OrderModel> getAllOrders() {
@@ -40,6 +42,7 @@ public class OrderControl {
         }
         else if(orderRepository.getOrderStatusid(ORDERID) == 5L){
             orderRepository.updateStatusOFD(ORDERID,6L);
+            userControl.assignDelivery(ORDERID);
         }
     }
 

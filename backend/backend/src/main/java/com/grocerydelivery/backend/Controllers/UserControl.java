@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/USERS")
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserControl {
     @Autowired
@@ -98,8 +98,8 @@ public ResponseEntity<String> getRole(HttpSession session) {
     PaymentRepository paymentRepository;
 //    @Autowired
 //    AddressService addressService;
-//    @Autowired
-//    ItemService itemService;
+    @Autowired
+    ItemService itemService;
 //    @Autowired
 //    UserRepository userRepository;
     @Autowired
@@ -225,21 +225,28 @@ public ResponseEntity<String> getRole(HttpSession session) {
 //    public List<ItemModel> getItemsByOrder(@PathVariable Long ORDERID, @RequestParam Long USERID) {
 //        return itemService.getItemsByOrderIdCheckCart(ORDERID, USERID);
 //    }
-//
-//
-//    @PutMapping("/modifyCart/{ORDERID}")
-//    private void modifyCart(@PathVariable Long ORDERID, @RequestParam Long USERID, @RequestParam String action, @RequestParam(required = false) Long QUANTITY, @RequestParam(required = false) Long PRODUCTID) {
-//        if (action.equals("add")) {
-//            getItemsByOrder(USERID, ORDERID);
-//        } else if (action.equals("delete")) {
-//            if (QUANTITY != null && PRODUCTID != null && QUANTITY > 0) {
-//                itemRepository.decreaseItemQuantity(USERID, ORDERID, QUANTITY, PRODUCTID);
-//            } else if(PRODUCTID != null){
-//                itemRepository.deleteItem(USERID, ORDERID,PRODUCTID);
-//            }
-//        }
-//    }
-//
+
+
+    @PutMapping("/modifyCart/{ORDERID}")
+    private void modifyCart(@PathVariable Long ORDERID, @RequestParam String action, @RequestParam(required = false) Long QUANTITY, @RequestParam Long PRODUCTID,HttpSession session) {
+        Long USERID=(Long) session.getAttribute("USERID");
+        if (action.equals("add")) {
+            if(QUANTITY!=null){
+                itemService.MaddProduct(USERID,ORDERID,QUANTITY, PRODUCTID);
+            }
+            else{
+                itemService.MaddProduct(USERID,ORDERID,1L, PRODUCTID);
+            }
+//            itemService.getItemsByOrderIdCheckCart(USERID, ORDERID);
+        } else if (action.equals("delete")) {
+            if (QUANTITY != null && PRODUCTID != null && QUANTITY > 0) {
+                itemRepository.decreaseItemQuantity(USERID, ORDERID, QUANTITY, PRODUCTID);
+            } else if(PRODUCTID != null){
+                itemRepository.deleteItem(USERID, ORDERID,PRODUCTID);
+            }
+        }
+    }
+
     @PutMapping("/addPayment/{ORDERID}")
     private void addPayment(@PathVariable Long ORDERID,@RequestParam String PAYMENTMETHOD,HttpSession session) {
         Long USERID = (Long) session.getAttribute("USERID");
@@ -279,35 +286,37 @@ public ResponseEntity<String> getRole(HttpSession session) {
             return "Payment Pending";
         }
     }
-//
-//    @PutMapping("/addAddress")
-//    private AddressModel addAddress(@RequestBody AddressModel addressModel){
-//        return addressService.addAddress(addressModel);
-//    }
-//
-//    @PutMapping("/addDelivery")
-//    private String addDeliver(HttpSession session){
-//        Long USERID=(Long) session.getAttribute("USERID");
-//        if(userRepository.checkRole(USERID)=="delivery" && deliveryRepository.checkUser(USERID)==0){
-//            deliveryRepository.addDelivery(USERID,true,null,null);
-//            return USERID.toString();
-//        }
-//        else {
-//            return "Delivery Person Already Exists";
-//        }
-//    }
-//
-//    @PutMapping("/assignDelivery/{ORDERID}")
-//    private void assignDelivery(@PathVariable Long ORDERID){
-//        Long USERID=orderRepository.getUSERID(ORDERID);
-//        if(deliveryRepository.availability()>0){
-//            deliveryRepository.assignDelivery(USERID,ORDERID);
-//        }
-//    }
-//
+
+    @PutMapping("/addAddress")
+    private AddressModel addAddress(@RequestBody AddressModel addressModel){
+        return addressService.addAddress(addressModel);
+    }
+
+    @PutMapping("/addDelivery")
+    private String addDeliver(HttpSession session){
+        Long USERID=(Long) session.getAttribute("USERID");
+        System.out.println(deliveryRepository.checkUser(USERID));
+        if(deliveryRepository.checkUser(USERID).equals("0")){
+            deliveryRepository.addDelivery(USERID,true,null,null);
+            return USERID.toString();
+        }
+        else {
+            return "Delivery Person Already Exists";
+        }
+    }
+
+    @PutMapping("/assignDelivery/{ORDERID}")
+    public void assignDelivery(@PathVariable Long ORDERID){
+        Long USERID=orderRepository.getUSERID(ORDERID);
+        if(deliveryRepository.availability().equals("1")){
+            Long DELIVERYPERSONID=deliveryRepository.getDelivery();
+            deliveryRepository.assignDelivery(USERID,ORDERID,DELIVERYPERSONID);
+        }
+    }
+
 //    @GetMapping("/showDelivery")
 //    private ResponseEntity<Map<String, Object>> showDelivery(HttpSession session){
-//        Long DELIVERYPERSONID=(Long) session.getAttribute("ISERID");
+//        Long DELIVERYPERSONID=(Long) session.getAttribute("USERID");
 //        Long ORDERID=deliveryRepository.getOrderid(DELIVERYPERSONID);
 //        Long USERID=deliveryRepository.getUserid(DELIVERYPERSONID);
 //        Long VENDORID=itemRepository.getVendorid(ORDERID);
@@ -323,15 +332,16 @@ public ResponseEntity<String> getRole(HttpSession session) {
 //        return ResponseEntity.ok(r);
 //    }
 
-//    @PutMapping("/updateAvailability/{DELIVERYPERSONID}")
-//    private void updateAvailability(@PathVariable Long DELIVERYPERSONID,@PathVariable String delivered){
-//        if(delivered.equals("yes")){
-//            Long ORDERID=deliveryRepository.getOrderid(DELIVERYPERSONID);
-//            deliveryRepository.updateAvailability(DELIVERYPERSONID);
-//            orderControl.updateStatus(ORDERID);
-//        }
-//    }
-//
+    @PutMapping("/updateAvailability")
+    private void updateAvailability(@RequestParam String delivered,HttpSession session){
+        Long DELIVERYPERSONID=(Long) session.getAttribute("USERID");
+        if(delivered.equals("yes")){
+            Long ORDERID=deliveryRepository.getOrderid(DELIVERYPERSONID);
+            deliveryRepository.updateAvailability(DELIVERYPERSONID);
+            orderRepository.updateStatusD(ORDERID);
+        }
+    }
+
 //    @GetMapping("/showOrder/{ORDERID}")
 //    private List<Object[]> showOrder(@PathVariable Long ORDERID){
 //        Float TOTAL=orderRepository.getAMOUNT(ORDERID);

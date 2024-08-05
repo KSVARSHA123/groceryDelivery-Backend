@@ -10,11 +10,22 @@ import java.util.List;
 
 @Service
 public class ItemService {
-//    @Autowired
-//    ItemRepository itemRepository;
-//    @Autowired
-//    ProductRepository productRepository;
-//
+    @Autowired
+    ItemRepository itemRepository;
+    @Autowired
+    ProductRepository productRepository;
+
+    public void MaddProduct(Long USERID,Long ORDERID,Long QUANTITY,Long PRODUCTID){
+        Long ITEMID=itemRepository.existsProduct(ORDERID,PRODUCTID);
+        if(ITEMID!=null){
+            itemRepository.updateQuantity(ORDERID,PRODUCTID,QUANTITY);
+        }
+        else{
+            Float PRICE=productRepository.getPRICE(PRODUCTID);
+            itemRepository.saveItem(PRODUCTID,QUANTITY,PRICE,USERID,ORDERID);
+        }
+    }
+
 //    public List<ItemModel> getItemsByOrderIdCheckCart(Long ORDERID, Long USERID) {
 //        List<ItemModel> items = itemRepository.findByOrderId(ORDERID);
 //        for (ItemModel item : items) {

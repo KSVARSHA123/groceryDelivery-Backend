@@ -35,6 +35,6 @@ public interface UserRepository extends JpaRepository<UserModel,Long> {
 //    @Query(value = "SELECT * FROM USERS WHERE USEREMAIL= :USEREMAIL AND USERPASSWORD= :USERPASSWORD", nativeQuery = true)
 //    UserModel findByUSEREMAILAndUSERPASSWORD(@Param("USEREMAIL") String USEREMAIL, @Param("USERPASSWORD") String USERPASSWORD);
 
-    @Query(value = "SELECT USERROLE FROM USERS WHERE USERID= :USERID",nativeQuery = true)
-    String checkRole(@Param("USERID") Long USERID);
+//    @Query(value = "SELECT USERROLE FROM USERS WHERE USERID= :USERID",nativeQuery = true)
+//    String checkRole(@Param("USERID") Long USERID);
 }

@@ -10,21 +10,24 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface DeliveryRepository extends JpaRepository<DeliveryModel,Long> {
 
-    @Query(value = "SELECT COUNT(*) FROM DELIVERY WHERE DELIVERYPERSONID= :USERID",nativeQuery = true)
-    Long checkUser(@Param("USERID") Long USERID);
+    @Query(value = "SELECT CASE WHEN COUNT(*)>0 THEN 1 ELSE 0 END FROM DELIVERY WHERE DELIVERYPERSONID= :USERID",nativeQuery = true)
+    String checkUser(@Param("USERID") Long USERID);
 
-    @Query(value = "SELECT COUNT(*) FROM DELIVERY WHERE AVAILABILITY=true",nativeQuery = true)
-    Long availability();
+    @Query(value = "SELECT CASE WHEN COUNT(*)>0 THEN 1 ELSE 0 END FROM DELIVERY WHERE AVAILABILITY=1",nativeQuery = true)
+    String availability();
+
+    @Query(value = "SELECT DELIVERYPERSONID FROM DELIVERY WHERE AVAILABILITY=1 LIMIT 1",nativeQuery = true)
+    Long getDelivery();
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE DELIVERY SET USERID= :USERID,ORDERID= :ORDERID,AVAILABILITY=false WHERE DELIVERYPERSONID=(SELECT DELIVERYPERSONID FROM DELIVERY WHERE AVAILABILITY=true LIMIT 1)",nativeQuery = true)
-    void assignDelivery(@Param("USERID") Long USERID, @Param("ORDERID") Long ORDERID);
+    @Query(value = "UPDATE DELIVERY SET USERID= :USERID,ORDERID= :ORDERID,AVAILABILITY=0 WHERE DELIVERYPERSONID=:DELIVERYPERSONID",nativeQuery = true)
+    void assignDelivery(@Param("USERID") Long USERID, @Param("ORDERID") Long ORDERID,@Param("DELIVERYPERSONID") Long DELIVERYPERSONID);
 
-//    @Transactional
-//    @Modifying
-//    @Query(value = "UPDATE DELIVERY SET USERID= null,ORDERID=null,AVAILABILITY=true WHERE DELIVERYPERSONID= :DELIVERYPERSONID",nativeQuery = true)
-//    void updateAvailability(@Param("DELIVERYPERSONID") Long DELIVERYPERSONID);
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE DELIVERY SET USERID= null,ORDERID=null,AVAILABILITY=true WHERE DELIVERYPERSONID= :DELIVERYPERSONID",nativeQuery = true)
+    void updateAvailability(@Param("DELIVERYPERSONID") Long DELIVERYPERSONID);
 
     @Query(value = "SELECT ORDERID FROM DELIVERY WHERE DELIVERYPERSONID= :DELIVERYPERSONID",nativeQuery = true)
     Long getOrderid(@Param("DELIVERYPERSONID") Long DELIVERYPERSONID);

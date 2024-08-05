@@ -56,17 +56,18 @@ public interface OrderRepository extends JpaRepository<OrderModel,Long> {
     @Modifying
     @Query(value = "UPDATE ORDERDETAILS SET ORDERDETAILS O JOIN TIMESLOT T ON O.TIMESLOTID=T.SLOTID SET O.ORDERSTATUSID=:ORDERSTATUSID WHERE O.ORDERID=:ORDERID AND (TIME(NOW()) BETWEEN T.STARTTIME AND T.ENDTIME) AND O.DELIVERYDATE=CURRENT_DATE()",nativeQuery = true)
     void updateStatusOFD(@Param("ORDERID") Long ORDERID,@Param("ORDERSTATUSID") Long ORDERSTATUSID);
-//
-//    @Transactional
-//    @Modifying
-//    @Query(value = "UPDATE ORDERDETAILS SET od.ORDERSTATUSID = od.ORDERSTATUSID+1 WHERE od.ORDERID = :ORDERID",nativeQuery = true)
-//    void updateStatus3(@Param("ORDERID") Long ORDERID);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE ORDERDETAILS SET ORDERSTATUSID = 7 WHERE ORDERID = :ORDERID",nativeQuery = true)
+    void updateStatusD(@Param("ORDERID") Long ORDERID);
+
 
     @Query(value = "SELECT ORDERSTATUSID FROM ORDERDETAILS WHERE ORDERID=:ORDERID",nativeQuery = true)
     Long getOrderStatusid(@Param("ORDERID") Long ORDERID);
 
-//    @Query(value = "SELECT USERID FROM ORDERDETAILS WHERE ORDERID= :ORDERID",nativeQuery = true)
-//    Long getUSERID(@Param("ORDERID") Long ORDERID);
+    @Query(value = "SELECT USERID FROM ORDERDETAILS WHERE ORDERID= :ORDERID",nativeQuery = true)
+    Long getUSERID(@Param("ORDERID") Long ORDERID);
 
     @Query(value = "SELECT TOTAL FROM ORDERDETAILS WHERE ORDERID= :ORDERID",nativeQuery = true)
     Float getAMOUNT(@Param("ORDERID") Long ORDERID);
