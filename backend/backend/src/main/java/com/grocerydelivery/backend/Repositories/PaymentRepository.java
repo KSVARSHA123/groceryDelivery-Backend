@@ -20,10 +20,10 @@ public interface PaymentRepository extends JpaRepository<PaymentModel, Long> {
     @Modifying
     @Transactional
     @Query(value = "UPDATE PAYMENT SET PAYMENTSTATUS = :PAYMENTSTATUS WHERE ORDERID = :ORDERID", nativeQuery = true)
-    void makePayment(@Param("ORDERID") Long ORDERID, @Param("PAYMENTSTATUS") boolean PAYMENTSTATUS);
+    void makePayment(@Param("ORDERID") Long ORDERID, @Param("PAYMENTSTATUS") Long PAYMENTSTATUS);
 
-    @Query(value = "SELECT PAYMENTSTATUS FROM PAYMENT WHERE ORDERID= :ORDERID",nativeQuery = true)
-    boolean getPaymentStatus(@Param("ORDERID") Long ORDERID);
+    @Query(value = "SELECT CASE WHEN PAYMENTSTATUS = 0 THEN false ELSE true END FROM PAYMENT WHERE ORDERID= :ORDERID",nativeQuery = true)
+    String getPaymentStatus(@Param("ORDERID") Long ORDERID);
 
     @Query(value = "SELECT PAYMENTMETHOD FROM PAYMENT WHERE ORDERID= :ORDERID",nativeQuery = true)
     String getPaymentMode(@Param("ORDERID") Long ORDERID);

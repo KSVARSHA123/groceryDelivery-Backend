@@ -21,10 +21,10 @@ public interface DeliveryRepository extends JpaRepository<DeliveryModel,Long> {
     @Query(value = "UPDATE DELIVERY SET USERID= :USERID,ORDERID= :ORDERID,AVAILABILITY=false WHERE DELIVERYPERSONID=(SELECT DELIVERYPERSONID FROM DELIVERY WHERE AVAILABILITY=true LIMIT 1)",nativeQuery = true)
     void assignDelivery(@Param("USERID") Long USERID, @Param("ORDERID") Long ORDERID);
 
-    @Transactional
-    @Modifying
-    @Query(value = "UPDATE DELIVERY SET USERID= null,ORDERID=null,AVAILABILITY=true WHERE DELIVERYPERSONID= :DELIVERYPERSONID",nativeQuery = true)
-    void updateAvailability(@Param("DELIVERYPERSONID") Long DELIVERYPERSONID);
+//    @Transactional
+//    @Modifying
+//    @Query(value = "UPDATE DELIVERY SET USERID= null,ORDERID=null,AVAILABILITY=true WHERE DELIVERYPERSONID= :DELIVERYPERSONID",nativeQuery = true)
+//    void updateAvailability(@Param("DELIVERYPERSONID") Long DELIVERYPERSONID);
 
     @Query(value = "SELECT ORDERID FROM DELIVERY WHERE DELIVERYPERSONID= :DELIVERYPERSONID",nativeQuery = true)
     Long getOrderid(@Param("DELIVERYPERSONID") Long DELIVERYPERSONID);

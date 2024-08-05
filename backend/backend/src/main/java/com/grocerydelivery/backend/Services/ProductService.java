@@ -13,9 +13,9 @@ import java.util.List;
 
 @Service
 public class ProductService {
-
-    @Autowired
-     private ProductRepository productRepository;
+//
+      @Autowired
+      private ProductRepository productRepository;
     @Autowired
     ItemRepository itemRepository;
 
@@ -23,42 +23,54 @@ public class ProductService {
         return (List<ProductModel>) productRepository.findAll();
     }
 
-    public ProductModel addProduct(ProductModel productModel){
-        return productRepository.save(productModel);
+    public void addProduct(ProductModel productModel,String PRODUCTNAME,Long VENDORID){
+        Long PRODUCTID=productRepository.checkProduct(PRODUCTNAME,VENDORID,productModel.getPRICE());
+        if(PRODUCTID!=null){
+            productRepository.updateStock(PRODUCTID,productModel.getSTOCK());
+        }
+        else {
+            productRepository.save(productModel);
+        }
     }
+//
+//    public void updateProductP(Long PRODUCTID,Float PRICE ){
+//        productRepository.updateProductP(PRODUCTID,PRICE);
+//    }
+//
+//    public void updateProductD(Long PRODUCTID,String PRODUCTDESCRIPTION){
+//        productRepository.updateProductD(PRODUCTID,PRODUCTDESCRIPTION);
+//    }
+//
+//    public void updateProductDP(Long PRODUCTID,String PRODUCTDESCRIPTION,Float PRICE ){
+//        productRepository.updateProductDP(PRODUCTID,PRODUCTDESCRIPTION,PRICE);
+//    }
+//
+//    public void updateProductStockDate(Long PRODUCTID,Long STOCK, LocalDate M_DATE,LocalDate EXP_DATE){
+//        productRepository.updateProductStockDate(PRODUCTID,STOCK,M_DATE,EXP_DATE);
+//    }
+//
+//    public void removeProduct(Long PRODUCTID){
+//        productRepository.deleteById(PRODUCTID);
+//    }
+//
+//    public void addStock(Long PRODUCTID,Long STOCK){
+//        productRepository.addStock(PRODUCTID,STOCK);
+//    }
+//
+//    public void removeStock(Long PRODUCTID, Long STOCK){
+//        productRepository.removeStock(PRODUCTID,STOCK);
+//    }
+//
+    public void addToCart(Long PRODUCTID, Long QUANTITY,Long USERID) {
+        Long itemId = itemRepository.checkItem(USERID,PRODUCTID);
+        if(itemId==null){
+            Float PRICE = productRepository.getPRICE(PRODUCTID);
+            itemRepository.saveItem(PRODUCTID, QUANTITY, PRICE, USERID);
+        }
+        else{
+            itemRepository.updateItem(USERID,PRODUCTID,QUANTITY);
+        }
 
-    public void updateProductP(Long PRODUCTID,Float PRICE ){
-        productRepository.updateProductP(PRODUCTID,PRICE);
     }
-
-    public void updateProductD(Long PRODUCTID,String PRODUCTDESCRIPTION){
-        productRepository.updateProductD(PRODUCTID,PRODUCTDESCRIPTION);
-    }
-
-    public void updateProductDP(Long PRODUCTID,String PRODUCTDESCRIPTION,Float PRICE ){
-        productRepository.updateProductDP(PRODUCTID,PRODUCTDESCRIPTION,PRICE);
-    }
-
-    public void updateProductStockDate(Long PRODUCTID,Long STOCK, LocalDate M_DATE,LocalDate EXP_DATE){
-        productRepository.updateProductStockDate(PRODUCTID,STOCK,M_DATE,EXP_DATE);
-    }
-
-    public void removeProduct(Long PRODUCTID){
-        productRepository.deleteById(PRODUCTID);
-    }
-
-    public void addStock(Long PRODUCTID,Long STOCK){
-        productRepository.addStock(PRODUCTID,STOCK);
-    }
-
-    public void removeStock(Long PRODUCTID, Long STOCK){
-        productRepository.removeStock(PRODUCTID,STOCK);
-    }
-
-    public void addToCart(Long USERID, Long PRODUCTID, Long QUANTITY) {
-        Float PRICE = productRepository.getPRICE(PRODUCTID);
-        itemRepository.saveItem(PRODUCTID, QUANTITY, PRICE, USERID);
-    }
-
 
 }

@@ -12,34 +12,34 @@ import java.util.List;
 @RestController
 @RequestMapping("/user/order")
 public class OrderControl {
-
-    @Autowired
-    OrderService orderService;
+//
+//    @Autowired
+//    OrderService orderService;
     @Autowired
     OrderRepository orderRepository;
-
-    @GetMapping("/getOrders")
-    public List<OrderModel> getAllOrders() {
-        return orderService.getAllOrders();
-    }
-
-
-
-    @GetMapping("/getOrder/{ORDERID}")
-    public OrderModel getOrder(@PathVariable Long ORDERID) {
-        return orderService.getOrder(ORDERID);
-    }
-
+//
+//    @GetMapping("/getOrders")
+//    public List<OrderModel> getAllOrders() {
+//        return orderService.getAllOrders();
+//    }
+//
+//
+//
+//    @GetMapping("/getOrder/{ORDERID}")
+//    public OrderModel getOrder(@PathVariable Long ORDERID) {
+//        return orderService.getOrder(ORDERID);
+//    }
+//
     @PutMapping("/updateStatus/{ORDERID}")
     public void updateStatus(@PathVariable Long ORDERID) {
-        if (orderRepository.viewStatus(ORDERID) == 1) {
-            orderService.updateStatus1(ORDERID);
+        if (orderRepository.getOrderStatusid(ORDERID) == 2L) {
+            orderRepository.updateStatusPackaging(ORDERID,4L);
         }
-        else if(orderRepository.viewStatus(ORDERID) == 2){
-            orderRepository.updateStatus2(ORDERID);
+        else if(orderRepository.getOrderStatusid(ORDERID) == 3L){
+            orderRepository.updateStatusPackaging(ORDERID,5L);
         }
-        else if(orderRepository.viewStatus(ORDERID) == 3){
-            orderRepository.updateStatus3(ORDERID);
+        else if(orderRepository.getOrderStatusid(ORDERID) == 5L){
+            orderRepository.updateStatusOFD(ORDERID,6L);
         }
     }
 

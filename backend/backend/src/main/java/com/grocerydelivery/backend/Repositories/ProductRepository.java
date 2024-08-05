@@ -10,44 +10,53 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<ProductModel, Long> {
+//
+//    @Transactional
+//    @Modifying
+//    @Query(value = "UPDATE Product SET PRODUCTDESCRIPTION = :PRODUCTDESCRIPTION WHERE PRODUCTID = :PRODUCTID", nativeQuery = true)
+//    void updateProductD(@Param("PRODUCTID") Long PRODUCTID, @Param("PRODUCTDESCRIPTION") String PRODUCTDESCRIPTION);
+//
+//    @Transactional
+//    @Modifying
+//    @Query(value = "UPDATE Product SET PRICE = :PRICE WHERE PRODUCTID = :PRODUCTID", nativeQuery = true)
+//    void updateProductP(@Param("PRODUCTID") Long PRODUCTID, @Param("PRICE") Float PRICE);
+//
+//    @Transactional
+//    @Modifying
+//    @Query(value = "UPDATE Product SET PRODUCTDESCRIPTION = :PRODUCTDESCRIPTION,PRICE = :PRICE WHERE PRODUCTID = :PRODUCTID", nativeQuery = true)
+//    void updateProductDP(@Param("PRODUCTID") Long PRODUCTID, @Param("PRODUCTDESCRIPTION") String PRODUCTDESCRIPTION,@Param("PRICE") Float PRICE);
+//
+//    @Transactional
+//    @Modifying
+//    @Query(value = "UPDATE Product SET STOCK= :STOCK, MANUFACTUREDATE= :M_DATE,EXPIRYDATE= :EXP_DATE WHERE PRODUCTID = :PRODUCTID", nativeQuery = true)
+//    void updateProductStockDate(@Param("PRODUCTID") Long PRODUCTID, @Param("STOCK") Long STOCK, @Param("M_DATE")LocalDate M_DATE,@Param("EXP_DATE") LocalDate EXP_DATE);
+//
+//    @Transactional
+//    @Modifying
+//    @Query(value = "UPDATE Product SET STOCK = STOCK+:STOCK WHERE PRODUCTID = :PRODUCTID", nativeQuery = true)
+//    void addStock(@Param("PRODUCTID") Long PRODUCTID, @Param("STOCK") Long STOCK);
+//
+//    @Transactional
+//    @Modifying
+//    @Query(value = "UPDATE Product SET STOCK = STOCK-:STOCK WHERE PRODUCTID = :PRODUCTID", nativeQuery = true)
+//    void removeStock(@Param("PRODUCTID") Long PRODUCTID, @Param("STOCK") Long STOCK);
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE Product SET PRODUCTDESCRIPTION = :PRODUCTDESCRIPTION WHERE PRODUCTID = :PRODUCTID", nativeQuery = true)
-    void updateProductD(@Param("PRODUCTID") Long PRODUCTID, @Param("PRODUCTDESCRIPTION") String PRODUCTDESCRIPTION);
+    @Query(value = "UPDATE PRODUCT SET STOCK=STOCK +:STOCK WHERE PRODUCTID=:PRODUCTID",nativeQuery = true)
+    void updateStock(@Param("PRODUCTID") Long PRODUCTID,@Param("STOCK") Long STOCK);
 
-    @Transactional
-    @Modifying
-    @Query(value = "UPDATE Product SET PRICE = :PRICE WHERE PRODUCTID = :PRODUCTID", nativeQuery = true)
-    void updateProductP(@Param("PRODUCTID") Long PRODUCTID, @Param("PRICE") Float PRICE);
-
-    @Transactional
-    @Modifying
-    @Query(value = "UPDATE Product SET PRODUCTDESCRIPTION = :PRODUCTDESCRIPTION,PRICE = :PRICE WHERE PRODUCTID = :PRODUCTID", nativeQuery = true)
-    void updateProductDP(@Param("PRODUCTID") Long PRODUCTID, @Param("PRODUCTDESCRIPTION") String PRODUCTDESCRIPTION,@Param("PRICE") Float PRICE);
-
-    @Transactional
-    @Modifying
-    @Query(value = "UPDATE Product SET STOCK= :STOCK, MANUFACTUREDATE= :M_DATE,EXPIRYDATE= :EXP_DATE WHERE PRODUCTID = :PRODUCTID", nativeQuery = true)
-    void updateProductStockDate(@Param("PRODUCTID") Long PRODUCTID, @Param("STOCK") Long STOCK, @Param("M_DATE")LocalDate M_DATE,@Param("EXP_DATE") LocalDate EXP_DATE);
-
-    @Transactional
-    @Modifying
-    @Query(value = "UPDATE Product SET STOCK = STOCK+:STOCK WHERE PRODUCTID = :PRODUCTID", nativeQuery = true)
-    void addStock(@Param("PRODUCTID") Long PRODUCTID, @Param("STOCK") Long STOCK);
-
-    @Transactional
-    @Modifying
-    @Query(value = "UPDATE Product SET STOCK = STOCK-:STOCK WHERE PRODUCTID = :PRODUCTID", nativeQuery = true)
-    void removeStock(@Param("PRODUCTID") Long PRODUCTID, @Param("STOCK") Long STOCK);
+    @Query(value = "SELECT PRODUCTID FROM PRODUCT WHERE PRODUCTNAME= :PRODUCTNAME AND VENDORID= :VENDORID AND PRICE= :PRICE",nativeQuery = true)
+    Long checkProduct(@Param("PRODUCTNAME") String PRODUCTNAME,@Param("VENDORID") Long VENDORID,@Param("PRICE") Float PRICE);
 
     @Query(value = "SELECT PRICE FROM Product WHERE PRODUCTID= :PRODUCTID",nativeQuery = true)
     Float getPRICE(@Param("PRODUCTID") Long PRODUCTID);
 
     @Query(value = "SELECT * FROM Product WHERE VENDORID= :VENDORID",nativeQuery = true)
-    ProductModel showProduct(@Param("VENDORID") Long VENDORID);
+    List<ProductModel> showProduct(@Param("VENDORID") Long VENDORID);
 
 }

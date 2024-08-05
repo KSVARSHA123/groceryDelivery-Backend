@@ -11,24 +11,29 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserModel,Long> {
+    UserModel findByUSEREMAIL(String USEREMAIL);
 
-    @Transactional
-    @Modifying
-    @Query(value = "UPDATE Users SET USERNAME = :NAME, USERPHONE = :PHONE WHERE USERID = :USERID", nativeQuery = true)
-    void updateUserNP(@Param("NAME") String NAME, @Param("PHONE") Long PHONE, @Param("USERID") Long USERID);
+    UserModel findByUSEREMAILAndUSERPASSWORD(String USEREMAIL,String USERPASSWORD);
 
-    @Transactional
-    @Modifying
-    @Query(value = "UPDATE Users SET USERNAME = :NAME WHERE USERID = :USERID", nativeQuery = true)
-    void updateUserN(@Param("NAME") String NAME, @Param("USERID") Long USERID);
-
-    @Transactional
-    @Modifying
-    @Query(value = "UPDATE Users SET USERPHONE = :PHONE WHERE USERID = :USERID", nativeQuery = true)
-    void updateUserP(@Param("PHONE") Long PHONE, @Param("USERID") Long USERID);
-
-    @Query(value = "SELECT * FROM USERS WHERE USEREMAIL= :USEREMAIL AND USERPASSWORD= :USERPASSWORD", nativeQuery = true)
-    UserModel findByUSEREMAILAndUSERPASSWORD(@Param("USEREMAIL") String USEREMAIL, @Param("USERPASSWORD") String USERPASSWORD);
+    @Query(value="SELECT USERROLE FROM USERS WHERE USERID= :USERID", nativeQuery = true )
+    String getRole(@Param("USERID") Long USERID);
+    //    @Transactional
+//    @Modifying
+//    @Query(value = "UPDATE Users SET USERNAME = :NAME, USERPHONE = :PHONE WHERE USERID = :USERID", nativeQuery = true)
+//    void updateUserNP(@Param("NAME") String NAME, @Param("PHONE") Long PHONE, @Param("USERID") Long USERID);
+//
+//    @Transactional
+//    @Modifying
+//    @Query(value = "UPDATE Users SET USERNAME = :NAME WHERE USERID = :USERID", nativeQuery = true)
+//    void updateUserN(@Param("NAME") String NAME, @Param("USERID") Long USERID);
+//
+//    @Transactional
+//    @Modifying
+//    @Query(value = "UPDATE Users SET USERPHONE = :PHONE WHERE USERID = :USERID", nativeQuery = true)
+//    void updateUserP(@Param("PHONE") Long PHONE, @Param("USERID") Long USERID);
+//
+//    @Query(value = "SELECT * FROM USERS WHERE USEREMAIL= :USEREMAIL AND USERPASSWORD= :USERPASSWORD", nativeQuery = true)
+//    UserModel findByUSEREMAILAndUSERPASSWORD(@Param("USEREMAIL") String USEREMAIL, @Param("USERPASSWORD") String USERPASSWORD);
 
     @Query(value = "SELECT USERROLE FROM USERS WHERE USERID= :USERID",nativeQuery = true)
     String checkRole(@Param("USERID") Long USERID);

@@ -9,20 +9,20 @@ import java.util.List;
 
 @Service
 public class OrderService {
-
-    @Autowired
-    OrderRepository orderRepository;
 //
-    public List<OrderModel> getAllOrders(){
-        return orderRepository.findAll();
-    }
-
-    public OrderModel getOrder( Long ORDERID){
-        return orderRepository.findById(ORDERID).orElse(null);
-    }
-
-    public void updateStatus1(Long ORDERID){
-        orderRepository.updateStatus1(ORDERID);
-    }
+//    @Autowired
+//    OrderRepository orderRepository;
+////
+//    public List<OrderModel> getAllOrders(){
+//        return orderRepository.findAll();
+//    }
+//
+//    public OrderModel getOrder( Long ORDERID){
+//        return orderRepository.findById(ORDERID).orElse(null);
+//    }
+//
+//    public void updateStatus1(Long ORDERID){
+//        orderRepository.updateStatus1(ORDERID);
+//    }
 
 }

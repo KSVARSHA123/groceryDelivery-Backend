@@ -4,6 +4,7 @@ import com.grocerydelivery.backend.Models.*;
 import com.grocerydelivery.backend.Repositories.*;
 import com.grocerydelivery.backend.Services.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
@@ -15,12 +16,76 @@ import java.time.LocalDate;
 import java.util.*;
 
 @RestController
-@RequestMapping("/USERS")
+@RequestMapping("/api/user")
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserControl {
-
     @Autowired
     UserService userService;
+    @Autowired
+    AddressService addressService;
+    @Autowired
+    UserRepository userRepository;
+
+    @PostMapping("/addUser")
+    public ResponseEntity<String> addUser(@RequestBody UserAddressWrapper userAddressWrapper) {
+        UserModel userModel = userAddressWrapper.getUserModel();
+        AddressModel addressModel = userAddressWrapper.getAddressModel();
+        UserModel a=userService.addUser(userModel);
+        Long USERID=a.getUSERID();
+        addressModel.setUSERID(USERID);
+        addressService.addAddress(addressModel);
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("userid", a.getUSERID()); // Return the userid
+//        response.put("userrole", a.getUSERROLE());
+//        response.put("userid", a.getUSERID());
+        return ResponseEntity.ok("Signup sucessfull");
+    }
+
+//    @GetMapping("/getRole")
+//    public String getRole(HttpSession httpSession){
+//        Long USERID=(Long) httpSession.getAttribute("USERID");
+//        return userRepository.getRole(USERID);
+//    }
+@GetMapping("/getRole")
+public ResponseEntity<String> getRole(HttpSession session) {
+    Long USERID = (Long) session.getAttribute("USERID");
+    System.out.println(USERID);
+    if (USERID == null) {
+        return ResponseEntity.badRequest().body("User ID not found in session");
+    }
+    String role = userRepository.getRole(USERID);
+    if (role == null) {
+        return ResponseEntity.badRequest().body("Role not found for user Email: " + USERID);
+    }
+    return ResponseEntity.ok(role);
+}
+
+    @GetMapping("/get")
+    public UserModel getUserById(HttpSession httpSession) {
+        return userService.getUserById((long)httpSession.getAttribute("USERID"));
+    }
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody UserModel userModel, HttpSession session){
+        UserModel loggedInUser = userRepository.findByUSEREMAIL(userModel.getUSEREMAIL());
+        if (loggedInUser != null && userService.Login(userModel.getUSEREMAIL(), HashUtil.hashPassword(userModel.getUSERPASSWORD()))!=null) {
+            session.setAttribute("USERID",loggedInUser.getUSERID());
+//            Long ORDERID=orderRepository.getOrderid((Long) session.getAttribute("USERID"));
+//            if(ORDERID!=null){
+//                session.setAttribute("ORDERID",ORDERID);
+//            }
+//            System.out.println(session.getAttribute("ORDERID"));
+            return ResponseEntity.ok("Login successful");
+        } else {
+            return ResponseEntity.badRequest().body("Invalid credentials");
+        }
+    }
+
+//@RestController
+//@RequestMapping("/USERS")
+//@CrossOrigin(origins = "http://localhost:3000")
+//public class UserControl {
+//
+
     @Autowired
     ProductService productService;
     @Autowired
@@ -31,77 +96,75 @@ public class UserControl {
     OrderRepository orderRepository;
     @Autowired
     PaymentRepository paymentRepository;
-    @Autowired
-    AddressService addressService;
-    @Autowired
-    ItemService itemService;
-    @Autowired
-    UserRepository userRepository;
+//    @Autowired
+//    AddressService addressService;
+//    @Autowired
+//    ItemService itemService;
+//    @Autowired
+//    UserRepository userRepository;
     @Autowired
     DeliveryRepository deliveryRepository;
-    @Autowired
-    OrderControl orderControl;
+//    @Autowired
+//    OrderControl orderControl;
     @Autowired
     AddressRepository addressRepository;
-
+//
     @GetMapping("/getAllUsers")
     public List<UserModel> getAllUsers() {
         return userService.getAllUsers();
 
     }
-
-    @PostMapping("/addUser")
-    public ResponseEntity<Map<String, Object>> addUser(@RequestBody UserModel userModel) {
-        UserModel a=userService.addUser(userModel);
-        Map<String, Object> response = new HashMap<>();
-        response.put("userid", a.getUSERID()); // Return the userid
-        response.put("userrole", a.getUSERROLE());
-        response.put("userid", a.getUSERID());
-        return ResponseEntity.ok(response);
+//
+//    @PostMapping("/addUser")
+//    public ResponseEntity<Map<String, Object>> addUser(@RequestBody UserAddressWrapper userAddressWrapper) {
+//        UserModel userModel = userAddressWrapper.getUserModel();
+//        AddressModel addressModel = userAddressWrapper.getAddressModel();
+//        UserModel a=userService.addUser(userModel);
+//        Long USERID=a.getUSERID();
+//        addressModel.setUSERID(USERID);
+//        addressService.addAddress(addressModel);
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("userid", a.getUSERID()); // Return the userid
+//        response.put("userrole", a.getUSERROLE());
+//        response.put("userid", a.getUSERID());
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    @PutMapping("/{USERID}")
+//    public void updateUser(@PathVariable Long USERID, @RequestParam(required = false) String NAME, @RequestParam(required = false) Long PHONE) {
+//        if (PHONE == null) {
+//            userService.updateUserN(NAME, USERID);
+//        } else if (NAME == null) {
+//            userService.updateUserP(PHONE, USERID);
+//        } else {
+//            userService.updateUserNP(NAME, PHONE, USERID);
+//        }
+//    }
+//
+//    @PostMapping("/login")
+//    public ResponseEntity<Map<String, Object>> login(@RequestBody UserModel userModel){
+//        UserModel loggedInUser = userService.Login(userModel.getUSEREMAIL(), HashUtil.hashPassword(userModel.getUSERPASSWORD()));
+//        if (loggedInUser != null) {
+//            Map<String, Object> response = new HashMap<>();
+//            response.put("userid", loggedInUser.getUSERID()); // Return the userid
+//            response.put("userrole", loggedInUser.getUSERROLE());
+//            return ResponseEntity.ok(response);
+//        } else {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Invalid Login"));
+//        }
+//    }
+//
+//
+//
+    @PostMapping("/addToCart")
+    public void addToCart( @RequestParam Long PRODUCTID, @RequestParam Long QUANTITY,HttpSession session) {
+        productService.addToCart(PRODUCTID, QUANTITY,(Long) session.getAttribute("USERID"));
     }
 
-    @PutMapping("/{USERID}")
-    public void updateUser(@PathVariable Long USERID, @RequestParam(required = false) String NAME, @RequestParam(required = false) Long PHONE) {
-        if (PHONE == null) {
-            userService.updateUserN(NAME, USERID);
-        } else if (NAME == null) {
-            userService.updateUserP(PHONE, USERID);
-        } else {
-            userService.updateUserNP(NAME, PHONE, USERID);
-        }
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody UserModel userModel){
-        UserModel loggedInUser = userService.Login(userModel.getUSEREMAIL(), HashUtil.hashPassword(userModel.getUSERPASSWORD()));
-        if (loggedInUser != null) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("userid", loggedInUser.getUSERID()); // Return the userid
-            response.put("userrole", loggedInUser.getUSERROLE());
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Collections.singletonMap("message", "Invalid Login"));
-        }
-    }
-
-
-    @GetMapping("/getAllproduct")
-    public List<ProductModel> getAll() {
-        return productService.getAllProduct();
-    }
-
-    @PostMapping("/addToCart/{USERID}")
-    public void addToCart(@PathVariable Long USERID, @RequestParam Long PRODUCTID, @RequestParam Long QUANTITY) {
-        productService.addToCart(USERID, PRODUCTID, QUANTITY);
-    }
-
-    @PutMapping("/removeFromCart/{USERID}")
-    public void removeFromCart(@PathVariable Long USERID,@RequestParam Long PRODUCTID,@RequestParam(required = false) Long QUANTITY){
-        if(QUANTITY==null){itemRepository.removeFromCart(USERID,PRODUCTID);}
-        else{
-            if(itemRepository.checkItem(USERID,PRODUCTID)>=QUANTITY){
-                itemRepository.removeFromCart(USERID,PRODUCTID,QUANTITY);}
-        }
+    @PutMapping("/removeFromCart")
+    public void removeFromCart(@RequestParam String PRODUCTID,HttpSession session){
+        Long USERID=(Long) session.getAttribute("USERID");
+        itemRepository.removeFromCart(USERID,Long.parseLong(PRODUCTID));
     }
 
     @GetMapping("/getSlot")
@@ -109,8 +172,15 @@ public class UserControl {
         return timeSlotRepository.findAll();
     }
 
-    @PutMapping("/OrderPlace/{USERID}")
-    public ResponseEntity<String> OrderPlace(@PathVariable Long USERID, @RequestParam Long SLOTID, @RequestParam LocalDate DELIVERYDATE,@RequestParam Long ADDRESSID) {
+    @PutMapping("/CancelOrder/{ORDERID}")
+    public ResponseEntity<String> CancelOrder(@PathVariable Long ORDERID){
+        orderRepository.cancel(ORDERID);
+        return ResponseEntity.ok("CANCELLED");
+    }
+
+    @PutMapping("/OrderPlace")
+    public ResponseEntity<String> OrderPlace(@RequestParam Long SLOTID, @RequestParam LocalDate DELIVERYDATE,@RequestParam Long ADDRESSID,HttpSession session) {
+        Long USERID=(Long) session.getAttribute("USERID");
         if (itemRepository.existsUser(USERID) == 1) {
             Float total = itemRepository.total(USERID);
             OrderModel order = new OrderModel();
@@ -122,6 +192,7 @@ public class UserControl {
             order.setTOTAL(total);
             order.setADDRESSID(ADDRESSID);
             orderRepository.save(order);
+//            session.setAttribute("ORDERID",order.getORDERID());
             itemRepository.updateOrderid(USERID, order.getORDERID());
             return ResponseEntity.ok(order.getORDERID().toString());
         } else {
@@ -129,105 +200,121 @@ public class UserControl {
         }
     }
 
-    @GetMapping("/cartItems/{USERID}")
-    public List<String> showItems(@PathVariable Long USERID) {
-        List<String> a = itemRepository.showItems(USERID);
+    @GetMapping("/cartItems")
+    public ResponseEntity<Object> showItems(HttpSession session) {
+        List<String> a = itemRepository.showItems((Long) session.getAttribute("USERID"));
         if (a.size() == 0) {
-            a.add("NO ITEMS IN THE CART");
+            return ResponseEntity.badRequest().body("No Items");
         }
-        return a;
+        return ResponseEntity.ok().body(a);
     }
-
-
+//
+//
     @PutMapping("/confirmOrder/{ORDERID}")
-    public String confirmOrder(@PathVariable Long ORDERID, @RequestParam String confirm) {
+    public String confirmOrder(@PathVariable Long ORDERID,@RequestParam String confirm,HttpSession session) {
         if (confirm.equals("yes")) {
-            orderRepository.confirmT(ORDERID, 1L);
+            orderRepository.confirmT(ORDERID);
             return "ORDER CONFIRMED";
         } else {
-            orderRepository.confirmF(ORDERID, 0L);
+            orderRepository.confirmF(ORDERID);
             return "ORDER CANCELLED";
         }
     }
-
-    @GetMapping("/getItemsByOrder/{ORDERID}")
-    public List<ItemModel> getItemsByOrder(@PathVariable Long ORDERID, @RequestParam Long USERID) {
-        return itemService.getItemsByOrderIdCheckCart(ORDERID, USERID);
-    }
-
-
-    @PutMapping("/modifyCart/{ORDERID}")
-    private void modifyCart(@PathVariable Long ORDERID, @RequestParam Long USERID, @RequestParam String action, @RequestParam(required = false) Long QUANTITY, @RequestParam(required = false) Long PRODUCTID) {
-        if (action.equals("add")) {
-            getItemsByOrder(USERID, ORDERID);
-        } else if (action.equals("delete")) {
-            if (QUANTITY != null && PRODUCTID != null && QUANTITY > 0) {
-                itemRepository.decreaseItemQuantity(USERID, ORDERID, QUANTITY, PRODUCTID);
-            } else if(PRODUCTID != null){
-                itemRepository.deleteItem(USERID, ORDERID,PRODUCTID);
-            }
-        }
-    }
-
+//
+//    @GetMapping("/getItemsByOrder/{ORDERID}")
+//    public List<ItemModel> getItemsByOrder(@PathVariable Long ORDERID, @RequestParam Long USERID) {
+//        return itemService.getItemsByOrderIdCheckCart(ORDERID, USERID);
+//    }
+//
+//
+//    @PutMapping("/modifyCart/{ORDERID}")
+//    private void modifyCart(@PathVariable Long ORDERID, @RequestParam Long USERID, @RequestParam String action, @RequestParam(required = false) Long QUANTITY, @RequestParam(required = false) Long PRODUCTID) {
+//        if (action.equals("add")) {
+//            getItemsByOrder(USERID, ORDERID);
+//        } else if (action.equals("delete")) {
+//            if (QUANTITY != null && PRODUCTID != null && QUANTITY > 0) {
+//                itemRepository.decreaseItemQuantity(USERID, ORDERID, QUANTITY, PRODUCTID);
+//            } else if(PRODUCTID != null){
+//                itemRepository.deleteItem(USERID, ORDERID,PRODUCTID);
+//            }
+//        }
+//    }
+//
     @PutMapping("/addPayment/{ORDERID}")
-    private void addPayment(@PathVariable Long ORDERID, @RequestParam String PAYMENTMETHOD) {
-        Long USERID = orderRepository.getUSERID(ORDERID);
+    private void addPayment(@PathVariable Long ORDERID,@RequestParam String PAYMENTMETHOD,HttpSession session) {
+        Long USERID = (Long) session.getAttribute("USERID");
         Float AMOUNT = orderRepository.getAMOUNT(ORDERID);
         if (PAYMENTMETHOD.equals("cash on delivery")) {
+            if(orderRepository.getOrderStatusid(ORDERID)== 4L){
+                orderRepository.updatePayment(ORDERID,true, 5L);
+            }
+            else if(orderRepository.getOrderStatusid(ORDERID)== 2L){
+                orderRepository.updatePayment(ORDERID,true, 3L);
+            }
             paymentRepository.insertPayment(ORDERID, USERID, AMOUNT, PAYMENTMETHOD, true);
-            orderRepository.updatePayment(ORDERID,true);
+
         } else if (PAYMENTMETHOD.equals("upi")) {
             paymentRepository.insertPayment(ORDERID, USERID, AMOUNT, PAYMENTMETHOD, false);
         }
     }
 
     @PutMapping("/makePayment/{ORDERID}")
-    private String makePayment(@PathVariable Long ORDERID, @RequestParam String Confirm){
-        if(paymentRepository.getPaymentStatus(ORDERID)==true){
+    private String makePayment(@PathVariable Long ORDERID,@RequestParam String Confirm){
+//        Long ORDERID=(Long) session.getAttribute("ORDERID");
+        System.out.println(paymentRepository.getPaymentStatus(ORDERID));
+        if(paymentRepository.getPaymentStatus(ORDERID)=="true"){
             return "Already Made Payment";
         }
         else if(Confirm.equals("yes")){
-            paymentRepository.makePayment(ORDERID,true);
-            orderRepository.updatePayment(ORDERID,true);
+            if(orderRepository.getOrderStatusid(ORDERID)== 4L){
+                orderRepository.updatePayment(ORDERID,true, 5L);
+            }
+            else if(orderRepository.getOrderStatusid(ORDERID)== 2L){
+                orderRepository.updatePayment(ORDERID,true, 3L);
+            }
+            paymentRepository.makePayment(ORDERID,1L);
             return "Made Payment";
         }
         else {
             return "Payment Pending";
         }
     }
-
-    @PutMapping("/addAddress")
-    private AddressModel addAddress(@RequestBody AddressModel addressModel){
-        return addressService.addAddress(addressModel);
-    }
-
-    @PutMapping("/addDelivery/{USERID}")
-    private String addDeliver(@PathVariable Long USERID){
-        if(userRepository.checkRole(USERID)=="delivery" && deliveryRepository.checkUser(USERID)==0){
-            deliveryRepository.addDelivery(USERID,true,null,null);
-            return USERID.toString();
-        }
-        else {
-            return "Delivery Person Already Exists";
-        }
-    }
-    @PutMapping("/assignDelivery/{ORDERID}")
-    private void assignDelivery(@PathVariable Long ORDERID){
-        Long USERID=orderRepository.getUSERID(ORDERID);
-        if(deliveryRepository.availability()>0){
-            deliveryRepository.assignDelivery(USERID,ORDERID);
-        }
-    }
-
-//    @GetMapping("/showDelivery/{DELIVERYPERSONID}")
-//    private ResponseEntity<Map<String, Object>> showDelivery(@PathVariable Long DELIVERYPERSONID){
+//
+//    @PutMapping("/addAddress")
+//    private AddressModel addAddress(@RequestBody AddressModel addressModel){
+//        return addressService.addAddress(addressModel);
+//    }
+//
+//    @PutMapping("/addDelivery")
+//    private String addDeliver(HttpSession session){
+//        Long USERID=(Long) session.getAttribute("USERID");
+//        if(userRepository.checkRole(USERID)=="delivery" && deliveryRepository.checkUser(USERID)==0){
+//            deliveryRepository.addDelivery(USERID,true,null,null);
+//            return USERID.toString();
+//        }
+//        else {
+//            return "Delivery Person Already Exists";
+//        }
+//    }
+//
+//    @PutMapping("/assignDelivery/{ORDERID}")
+//    private void assignDelivery(@PathVariable Long ORDERID){
+//        Long USERID=orderRepository.getUSERID(ORDERID);
+//        if(deliveryRepository.availability()>0){
+//            deliveryRepository.assignDelivery(USERID,ORDERID);
+//        }
+//    }
+//
+//    @GetMapping("/showDelivery")
+//    private ResponseEntity<Map<String, Object>> showDelivery(HttpSession session){
+//        Long DELIVERYPERSONID=(Long) session.getAttribute("ISERID");
 //        Long ORDERID=deliveryRepository.getOrderid(DELIVERYPERSONID);
 //        Long USERID=deliveryRepository.getUserid(DELIVERYPERSONID);
 //        Long VENDORID=itemRepository.getVendorid(ORDERID);
 //        Float TOTAL=orderRepository.getAMOUNT(ORDERID);
 //        String PAYMENTMETHOD=paymentRepository.getPaymentMode(ORDERID);
-//        String VENDORADDRESS=addressRepository.getAddress(VENDORID);
-//        String USERADDRESS=addressRepository.getAddress(USERID);
+//        String VENDORADDRESS= Arrays.toString(addressRepository.getAddress(VENDORID).get(1));
+//        String USERADDRESS= Arrays.toString(addressRepository.getAddress(USERID).get(1));
 //        Map<String, Object> r = new HashMap<>();
 //        r.put("pickup",VENDORADDRESS);
 //        r.put("drop",USERADDRESS);
@@ -236,65 +323,110 @@ public class UserControl {
 //        return ResponseEntity.ok(r);
 //    }
 
-    @PutMapping("/updateAvailability/{DELIVERYPERSONID}")
-    private void updateAvailability(@PathVariable Long DELIVERYPERSONID,@PathVariable String delivered){
-        if(delivered.equals("yes")){
-            Long ORDERID=deliveryRepository.getOrderid(DELIVERYPERSONID);
-            deliveryRepository.updateAvailability(DELIVERYPERSONID);
-            orderControl.updateStatus(ORDERID);
+//    @PutMapping("/updateAvailability/{DELIVERYPERSONID}")
+//    private void updateAvailability(@PathVariable Long DELIVERYPERSONID,@PathVariable String delivered){
+//        if(delivered.equals("yes")){
+//            Long ORDERID=deliveryRepository.getOrderid(DELIVERYPERSONID);
+//            deliveryRepository.updateAvailability(DELIVERYPERSONID);
+//            orderControl.updateStatus(ORDERID);
+//        }
+//    }
+//
+//    @GetMapping("/showOrder/{ORDERID}")
+//    private List<Object[]> showOrder(@PathVariable Long ORDERID){
+//        Float TOTAL=orderRepository.getAMOUNT(ORDERID);
+//        List<Object[]> a=itemRepository.findItemsByOrderId(ORDERID);
+//        Object[] totalArray = new Object[] {"TOTAL:", TOTAL.toString()};
+//        a.addLast(totalArray);
+//        return a;
+//    }
+//
+@GetMapping("/showOrdersByUser")
+public ResponseEntity<List<Map<String, Object>>> showOrders(HttpSession session) {
+    Long USERID = (Long) session.getAttribute("USERID");
+    List<Object[]> results = orderRepository.showOrders(USERID);
+    List<Map<String, Object>> orders = new ArrayList<>();
+
+    for (Object[] result : results) {
+        if(userService.cancellation(((Number) result[7]).longValue())==8L){
+            result[1] = "CANCELLED";
         }
+//        try {
+//            orderRepository.cancellation(((Number) result[7]).longValue());
+//            if (orderRepository.getOrderStatusid(((Number) result[7]).longValue()) == 8L) {
+//                result[1] = "CANCELLED";
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace(); // Log the exception
+//        }
+        Map<String, Object> order = new HashMap<>();
+        order.put("orderconfirmation", result[0]);
+        order.put("orderStatus", result[1]);
+        order.put("deliveryDate", result[2]);
+        order.put("startTime", result[3]);
+        order.put("endTime", result[4]);
+        order.put("total", result[5]);
+        order.put("orderDate", result[6]);
+        order.put("orderid", result[7]);
+        orders.add(order);
     }
 
-    @GetMapping("/showOrder/{ORDERID}")
-    private List<Object[]> showOrder(@PathVariable Long ORDERID){
-        Float TOTAL=orderRepository.getAMOUNT(ORDERID);
-        List<Object[]> a=itemRepository.findItemsByOrderId(ORDERID);
-        Object[] totalArray = new Object[] {"TOTAL:", TOTAL.toString()};
-        a.addLast(totalArray);
-        return a;
-    }
+    return ResponseEntity.ok(orders);
+}
 
-    @GetMapping("/showOrders/{USERID}")
-    public ResponseEntity<List<Map<String, Object>>> showOrders(@PathVariable Long USERID) {
-        List<Object[]> results = orderRepository.showOrders(USERID);
+
+    @GetMapping("/getOrdersByVendor")
+    public ResponseEntity<List<Map<String, Object>>> getOrdersByVendor(HttpSession session) {
+        Long VENDORID = (Long) session.getAttribute("USERID");
+        List<Object[]> productResults = orderRepository.findProductByVendorId(VENDORID);
+        List<Object[]> orderResults = orderRepository.findOrdersByVendorId(VENDORID);
+
+        // Create a dictionary to map orderid to list of products
+        Map<Long, List<Map<String, Object>>> orderProductsMap = new HashMap<>();
+        for (Object[] productResult : productResults) {
+            Long orderId = ((Number) productResult[0]).longValue();
+            String productName = (String) productResult[1];
+            Long quantity = ((Number) productResult[2]).longValue();
+            String desc = (String) productResult[3];
+            Float price=(Float) productResult[4];
+
+            Map<String, Object> productDetails = new HashMap<>();
+            productDetails.put("productName", productName);
+            productDetails.put("quantity", quantity);
+            productDetails.put("description", desc);
+            productDetails.put("price",price);
+
+            orderProductsMap.computeIfAbsent(orderId, k -> new ArrayList<>()).add(productDetails);
+        }
+
         List<Map<String, Object>> orders = new ArrayList<>();
-
-        for (Object[] result : results) {
+        for (Object[] orderResult : orderResults) {
+            if (userService.cancellation(((Number) orderResult[5]).longValue())==8L){
+                orderResult[0]="CANCELLED";
+            }
             Map<String, Object> order = new HashMap<>();
-            order.put("orderconfirmation", result[0]);
-            order.put("orderStatus", result[1]);
-            order.put("deliveryDate", result[2]);
-            order.put("startTime", result[3]);
-            order.put("endTime", result[4]);
-            order.put("total",result[5]);
-            order.put("orderDate",result[6]);
+            order.put("orderStatus", orderResult[0]);
+            order.put("deliveryDate", orderResult[1]);
+            order.put("startTime", orderResult[2]);
+            order.put("endTime", orderResult[3]);
+            order.put("total", orderResult[4]);
+            Long orderId = ((Number) orderResult[5]).longValue();
+            order.put("orderid", orderId);
+
+            // Add the list of products to the order
+            order.put("products", orderProductsMap.get(orderId));
+
             orders.add(order);
         }
 
-        return ResponseEntity.ok(orders);
+        return ResponseEntity.ok().body(orders);
     }
 
-    @GetMapping("/getOrdersByVendor/{VENDORID}")
-    public List<Map<String, Object>> getOrdersByVendor(@PathVariable Long VENDORID) {
-        List<Object[]> results = orderRepository.findOrdersByVendorId(VENDORID);
-        List<Map<String, Object>> orders = new ArrayList<>();
 
-        for (Object[] result : results) {
-            Map<String, Object> order = new HashMap<>();
-            order.put("productname", result[0]);
-            order.put("orderStatus", result[1]);
-            order.put("deliveryDate", result[2]);
-            order.put("startTime", result[3]);
-            order.put("endTime", result[4]);
-            order.put("total", result[5]);
-            orders.add(order);
-        }
 
-        return orders;
-    }
-
-    @GetMapping("/showAddress/{USERID}")
-    public ResponseEntity<List<Map<String, Object>>> showAddress(@PathVariable Long USERID){
+    @GetMapping("/showAddress")
+    public ResponseEntity<List<Map<String, Object>>> showAddress(HttpSession session){
+        Long USERID=(Long)session.getAttribute("USERID");
         List<Object[]> results=addressRepository.getAddress(USERID);
         if(results.size()>0) {
             List<Map<String, Object>> addresses = new ArrayList<>();

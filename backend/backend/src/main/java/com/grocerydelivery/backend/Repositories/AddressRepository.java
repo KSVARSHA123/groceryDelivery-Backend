@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface AddressRepository extends JpaRepository<AddressModel,Long> {
 
-    @Query(value = "SELECT ADDRESSID,CONCAT(ADDRESSLINE,',',COUNTRY,',',STATE,',',CITY,'-','PINCODE') FROM ADDRESS WHERE USERID= :USERID",nativeQuery = true)
+    @Query(value = "SELECT ADDRESSID,CONCAT_WS(',',ADDRESSLINE,COUNTRY,STATE,CITY,CONCAT('-',PINCODE)) FROM ADDRESS WHERE USERID= :USERID",nativeQuery = true)
     List<Object[]> getAddress(@Param("USERID") Long USERID);
 }
