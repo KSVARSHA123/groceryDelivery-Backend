@@ -32,7 +32,19 @@ public class ProductService {
             productRepository.save(productModel);
         }
     }
-//
+
+    public void addToCart(Long PRODUCTID, Long QUANTITY,Long USERID) {
+        Long itemId = itemRepository.checkItem(USERID,PRODUCTID);
+        if(itemId==null){
+            Float PRICE = productRepository.getPRICE(PRODUCTID);
+            itemRepository.saveItem(PRODUCTID, QUANTITY, PRICE, USERID);
+        }
+        else{
+            itemRepository.updateItem(USERID,PRODUCTID,QUANTITY);
+        }
+
+    }
+    //
 //    public void updateProductP(Long PRODUCTID,Float PRICE ){
 //        productRepository.updateProductP(PRODUCTID,PRICE);
 //    }
@@ -61,16 +73,4 @@ public class ProductService {
 //        productRepository.removeStock(PRODUCTID,STOCK);
 //    }
 //
-    public void addToCart(Long PRODUCTID, Long QUANTITY,Long USERID) {
-        Long itemId = itemRepository.checkItem(USERID,PRODUCTID);
-        if(itemId==null){
-            Float PRICE = productRepository.getPRICE(PRODUCTID);
-            itemRepository.saveItem(PRODUCTID, QUANTITY, PRICE, USERID);
-        }
-        else{
-            itemRepository.updateItem(USERID,PRODUCTID,QUANTITY);
-        }
-
-    }
-
 }

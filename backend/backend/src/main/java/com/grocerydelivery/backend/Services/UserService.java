@@ -37,7 +37,12 @@ public class UserService {
         userModel.setUSERPASSWORD(hashedPassword);
         return userRepository.save(userModel);
     }
-//
+
+    public UserModel Login(String EMAIL,String PASSWORD){
+        return userRepository.findByUSEREMAILAndUSERPASSWORD(EMAIL,PASSWORD);
+    }
+
+    //
 //    public void updateUserNP(String NAME, Long PHONE, Long USERID) {
 //        userRepository.updateUserNP(NAME, PHONE, USERID);
 //    }
@@ -50,7 +55,4 @@ public class UserService {
 //        userRepository.updateUserP(PHONE, USERID);
 //    }
 //
-    public UserModel Login(String EMAIL,String PASSWORD){
-        return userRepository.findByUSEREMAILAndUSERPASSWORD(EMAIL,PASSWORD);
-    }
 }

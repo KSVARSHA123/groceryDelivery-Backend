@@ -14,6 +14,19 @@ import java.util.List;
 
 @Repository
 public interface ProductRepository extends JpaRepository<ProductModel, Long> {
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE PRODUCT SET STOCK=STOCK +:STOCK WHERE PRODUCTID=:PRODUCTID",nativeQuery = true)
+    void updateStock(@Param("PRODUCTID") Long PRODUCTID,@Param("STOCK") Long STOCK);
+
+    @Query(value = "SELECT PRODUCTID FROM PRODUCT WHERE PRODUCTNAME= :PRODUCTNAME AND VENDORID= :VENDORID AND PRICE= :PRICE",nativeQuery = true)
+    Long checkProduct(@Param("PRODUCTNAME") String PRODUCTNAME,@Param("VENDORID") Long VENDORID,@Param("PRICE") Float PRICE);
+
+    @Query(value = "SELECT PRICE FROM Product WHERE PRODUCTID= :PRODUCTID",nativeQuery = true)
+    Float getPRICE(@Param("PRODUCTID") Long PRODUCTID);
+
+    @Query(value = "SELECT * FROM Product WHERE VENDORID= :VENDORID",nativeQuery = true)
+    List<ProductModel> showProduct(@Param("VENDORID") Long VENDORID);
 //
 //    @Transactional
 //    @Modifying
@@ -44,19 +57,4 @@ public interface ProductRepository extends JpaRepository<ProductModel, Long> {
 //    @Modifying
 //    @Query(value = "UPDATE Product SET STOCK = STOCK-:STOCK WHERE PRODUCTID = :PRODUCTID", nativeQuery = true)
 //    void removeStock(@Param("PRODUCTID") Long PRODUCTID, @Param("STOCK") Long STOCK);
-
-    @Transactional
-    @Modifying
-    @Query(value = "UPDATE PRODUCT SET STOCK=STOCK +:STOCK WHERE PRODUCTID=:PRODUCTID",nativeQuery = true)
-    void updateStock(@Param("PRODUCTID") Long PRODUCTID,@Param("STOCK") Long STOCK);
-
-    @Query(value = "SELECT PRODUCTID FROM PRODUCT WHERE PRODUCTNAME= :PRODUCTNAME AND VENDORID= :VENDORID AND PRICE= :PRICE",nativeQuery = true)
-    Long checkProduct(@Param("PRODUCTNAME") String PRODUCTNAME,@Param("VENDORID") Long VENDORID,@Param("PRICE") Float PRICE);
-
-    @Query(value = "SELECT PRICE FROM Product WHERE PRODUCTID= :PRODUCTID",nativeQuery = true)
-    Float getPRICE(@Param("PRODUCTID") Long PRODUCTID);
-
-    @Query(value = "SELECT * FROM Product WHERE VENDORID= :VENDORID",nativeQuery = true)
-    List<ProductModel> showProduct(@Param("VENDORID") Long VENDORID);
-
 }

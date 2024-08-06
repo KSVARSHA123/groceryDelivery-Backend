@@ -12,26 +12,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/user/order")
 public class OrderControl {
-//
-//    @Autowired
-//    OrderService orderService;
+
     @Autowired
     OrderRepository orderRepository;
     @Autowired
     UserControl userControl;
-//
-//    @GetMapping("/getOrders")
-//    public List<OrderModel> getAllOrders() {
-//        return orderService.getAllOrders();
-//    }
-//
-//
-//
-//    @GetMapping("/getOrder/{ORDERID}")
-//    public OrderModel getOrder(@PathVariable Long ORDERID) {
-//        return orderService.getOrder(ORDERID);
-//    }
-//
+
     @PutMapping("/updateStatus/{ORDERID}")
     public void updateStatus(@PathVariable Long ORDERID) {
         if (orderRepository.getOrderStatusid(ORDERID) == 2L) {

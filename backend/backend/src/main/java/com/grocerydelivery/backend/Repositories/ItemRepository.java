@@ -13,10 +13,6 @@ import java.util.List;
 
 @Repository
 public interface ItemRepository extends JpaRepository<ItemModel,Long> {
-//
-//    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END FROM ITEMS WHERE USERID = :USERID AND PRODUCTID = :PRODUCTID AND ORDERID IS NULL", nativeQuery = true)
-//    boolean existsByUserIdProductId(@Param("USERID") Long USERID, @Param("PRODUCTID") Long PRODUCTID);
-
     @Transactional
     @Modifying
     @Query(value = "UPDATE ITEMS SET QUANTITY = QUANTITY + :QUANTITY WHERE PRODUCTID = :PRODUCTID AND ORDERID=:ORDERID", nativeQuery = true)
@@ -39,8 +35,11 @@ public interface ItemRepository extends JpaRepository<ItemModel,Long> {
     @Query(value = "SELECT CASE WHEN COUNT(ITEMID) > 0 THEN 1 ELSE 0 END FROM ITEMS WHERE USERID = :USERID AND ORDERID IS NULL",nativeQuery = true)
     Long existsUser(@Param("USERID") Long USERID);
 
-    @Query(value = "SELECT SUM(CAST(PRICE AS Float)*CAST(QUANTITY AS Float)) AS total FROM ITEMS WHERE USERID= :USERID",nativeQuery = true)
+    @Query(value = "SELECT SUM(CAST(PRICE AS Float)*CAST(QUANTITY AS Float)) AS total FROM ITEMS WHERE USERID= :USERID AND ORDERID IS NULL",nativeQuery = true)
     Float total(@Param("USERID") Long USERID);
+
+    @Query(value = "SELECT SUM(CAST(PRICE AS Float)*CAST(QUANTITY AS Float)) AS total FROM ITEMS WHERE ORDERID=:ORDERID",nativeQuery = true)
+    Float totalm(@Param("ORDERID") Long ORDERID);
 
     @Transactional
     @Modifying
@@ -60,9 +59,6 @@ public interface ItemRepository extends JpaRepository<ItemModel,Long> {
     @Query(value = "DELETE FROM ITEMS WHERE USERID = :USERID AND ORDERID = :ORDERID AND PRODUCTID= :PRODUCTID",nativeQuery = true)
     void deleteItem(@Param("USERID") Long USERID, @Param("ORDERID") Long ORDERID,@Param("PRODUCTID") Long PRODUCTID);
 
-//    @Query(value = "SELECT p.PRODUCTNAME, p.PRICE, i.QUANTITY FROM ITEMS i JOIN Product p ON i.PRODUCTID = p.PRODUCTID WHERE i.ORDERID = :ORDERID", nativeQuery = true)
-//    List<Object[]> findItemsByOrderId(@Param("ORDERID") Long ORDERID);
-//
     @Query(value = "SELECT P.VENDORID FROM ITEMS I JOIN PRODUCT P ON I.PRODUCTID=P.PRODUCTID WHERE ORDERID= :ORDERID LIMIT 1",nativeQuery = true)
     Long getVendorid(@Param("ORDERID") Long ORDERID);
 
@@ -79,10 +75,17 @@ public interface ItemRepository extends JpaRepository<ItemModel,Long> {
     @Query(value = "UPDATE ITEMS SET QUANTITY= QUANTITY+:QUANTITY WHERE USERID= :USERID AND PRODUCTID =:PRODUCTID AND ORDERID IS NULL",nativeQuery = true)
     void updateItem(@Param("USERID") Long USERID,@Param("PRODUCTID") Long PRODUCTID,@Param("QUANTITY") Long QUANTITY);
 
+    @Query(value = "SELECT O.ORDERID,P.PRODUCTNAME,O.QUANTITY,O.PRICE FROM ITEMS O JOIN PRODUCT P ON O.PRODUCTID=P.PRODUCTID WHERE O.USERID=:USERID AND O.ORDERID=:ORDERID",nativeQuery = true)
+    List<Object[]> getProduct(@Param("ORDERID") Long ORDERID,@Param("USERID") Long USERID);
+
     @Transactional
     @Modifying
     @Query(value = "UPDATE ITEMS SET ORDERID=:ORDERID WHERE USERID=:USERID AND ORDERID IS NULL",nativeQuery = true)
     void ADD(@Param("ORDERID") Long ORDERID,@Param("USERID") Long USERID);
+
+//    @Query(value = "SELECT p.PRODUCTNAME, p.PRICE, i.QUANTITY FROM ITEMS i JOIN Product p ON i.PRODUCTID = p.PRODUCTID WHERE i.ORDERID = :ORDERID", nativeQuery = true)
+//    List<Object[]> findItemsByOrderId(@Param("ORDERID") Long ORDERID);
+//
 //    @Query(value = "SELECT * FROM ITEMS WHERE ORDERID = :ORDERID",nativeQuery = true)
 //    List<ItemModel> findByOrderId(@Param("ORDERID") Long ORDERID);
 //
@@ -101,4 +104,8 @@ public interface ItemRepository extends JpaRepository<ItemModel,Long> {
 //    @Modifying
 //    @Query(value = "UPDATE ITEMS SET QUANTITY= QUANTITY-:QUANTITY WHERE USERID= :USERID AND PRODUCTID= :PRODUCTID AND ORDERID IS NULL",nativeQuery = true)
 //    void removeFromCart(@Param("USERID") Long USERID,@Param("PRODUCTID") Long PRODUCTID,@Param("QUANTITY") Long QUANTITY);
-    }
+//
+//    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END FROM ITEMS WHERE USERID = :USERID AND PRODUCTID = :PRODUCTID AND ORDERID IS NULL", nativeQuery = true)
+//    boolean existsByUserIdProductId(@Param("USERID") Long USERID, @Param("PRODUCTID") Long PRODUCTID);
+
+}

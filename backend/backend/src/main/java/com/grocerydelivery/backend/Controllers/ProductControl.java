@@ -27,11 +27,24 @@ public class ProductControl {
     @PostMapping("/addProduct")
     public void addProduct(@RequestBody ProductModel productModel, HttpSession session){
         Long VENDORID= (Long)session.getAttribute("USERID");
+        System.out.println(VENDORID);
         productModel.setVENDORID(VENDORID);
         String PRODUCTNAME=productModel.getPRODUCTNAME();
         productService.addProduct(productModel,PRODUCTNAME,VENDORID);
     }
-//
+
+    @GetMapping("/showProduct")
+    public ResponseEntity<Object> showProduct(HttpSession session){
+        List<ProductModel> a=productRepository.showProduct((Long)session.getAttribute("USERID"));
+        if(a.size()!=0){
+            return ResponseEntity.ok(a);
+        }
+        else{
+            return ResponseEntity.badRequest().body("No Products By The Vendor");
+        }
+    }
+
+    //
 //    @PutMapping("/updateProductDescPrice/{PRODUCTID}")
 //    public void updateProduct(@PathVariable Long PRODUCTID, @RequestParam(required = false) String PRODUCTDESCRIPTION,
 //                              @RequestParam(required = false) Float PRICE){
@@ -66,14 +79,4 @@ public class ProductControl {
 //        productService.removeStock(PRODUCTID,STOCK);
 //    }
 //
-    @GetMapping("/showProduct")
-    public ResponseEntity<Object> showProduct(HttpSession session){
-        List<ProductModel> a=productRepository.showProduct((Long)session.getAttribute("USERID"));
-        if(a.size()!=0){
-            return ResponseEntity.ok(a);
-        }
-        else{
-            return ResponseEntity.badRequest().body("No Products By The Vendor");
-        }
-    }
 }

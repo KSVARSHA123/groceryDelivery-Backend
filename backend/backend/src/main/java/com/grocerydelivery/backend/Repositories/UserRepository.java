@@ -22,6 +22,7 @@ public interface UserRepository extends JpaRepository<UserModel,Long> {
 
     @Query(value = "SELECT USERNAME, USEREMAIL, USERPHONE FROM USERS", nativeQuery = true)
     List<Object[]> findUserDetails();
+
     //    @Transactional
 //    @Modifying
 //    @Query(value = "UPDATE Users SET USERNAME = :NAME, USERPHONE = :PHONE WHERE USERID = :USERID", nativeQuery = true)
