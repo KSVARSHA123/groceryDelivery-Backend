@@ -38,5 +38,5 @@ public interface DeliveryRepository extends JpaRepository<DeliveryModel,Long> {
     @Transactional
     @Modifying
     @Query(value = "INSERT INTO DELIVERY VALUES(:DELIVERYPERSONID,:AVAILABILITY,:ORDERID,:USERID)",nativeQuery = true)
-    void addDelivery(@Param("DELIVERYPERSONID") Long DELIVERYPERSONID,@Param("AVAILABILITY") boolean AVAILABILITY,@Param("ORDERID") Long ORDERID,@Param("USERID") Long USERID);
+    void addDelivery(@Param("DELIVERYPERSONID") Long DELIVERYPERSONID,@Param("AVAILABILITY") Long AVAILABILITY,@Param("ORDERID") Long ORDERID,@Param("USERID") Long USERID);
 }

@@ -79,6 +79,10 @@ public interface ItemRepository extends JpaRepository<ItemModel,Long> {
     @Query(value = "UPDATE ITEMS SET QUANTITY= QUANTITY+:QUANTITY WHERE USERID= :USERID AND PRODUCTID =:PRODUCTID AND ORDERID IS NULL",nativeQuery = true)
     void updateItem(@Param("USERID") Long USERID,@Param("PRODUCTID") Long PRODUCTID,@Param("QUANTITY") Long QUANTITY);
 
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE ITEMS SET ORDERID=:ORDERID WHERE USERID=:USERID AND ORDERID IS NULL",nativeQuery = true)
+    void ADD(@Param("ORDERID") Long ORDERID,@Param("USERID") Long USERID);
 //    @Query(value = "SELECT * FROM ITEMS WHERE ORDERID = :ORDERID",nativeQuery = true)
 //    List<ItemModel> findByOrderId(@Param("ORDERID") Long ORDERID);
 //

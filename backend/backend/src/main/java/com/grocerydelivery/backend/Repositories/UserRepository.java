@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public interface UserRepository extends JpaRepository<UserModel,Long> {
     UserModel findByUSEREMAIL(String USEREMAIL);
@@ -17,6 +19,9 @@ public interface UserRepository extends JpaRepository<UserModel,Long> {
 
     @Query(value="SELECT USERROLE FROM USERS WHERE USERID= :USERID", nativeQuery = true )
     String getRole(@Param("USERID") Long USERID);
+
+    @Query(value = "SELECT USERNAME, USEREMAIL, USERPHONE FROM USERS", nativeQuery = true)
+    List<Object[]> findUserDetails();
     //    @Transactional
 //    @Modifying
 //    @Query(value = "UPDATE Users SET USERNAME = :NAME, USERPHONE = :PHONE WHERE USERID = :USERID", nativeQuery = true)

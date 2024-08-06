@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/USERS")
@@ -25,6 +26,30 @@ public class UserControl {
     AddressService addressService;
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    ProductService productService;
+    @Autowired
+    TimeSlotRepository timeSlotRepository;
+    @Autowired
+    ItemRepository itemRepository;
+    @Autowired
+    OrderRepository orderRepository;
+    @Autowired
+    PaymentRepository paymentRepository;
+    //    @Autowired
+//    AddressService addressService;
+    @Autowired
+    ItemService itemService;
+    //    @Autowired
+//    UserRepository userRepository;
+    @Autowired
+    DeliveryRepository deliveryRepository;
+    //    @Autowired
+//    OrderControl orderControl;
+    @Autowired
+    AddressRepository addressRepository;
+//
 
     @PostMapping("/addUser")
     public ResponseEntity<String> addUser(@RequestBody UserAddressWrapper userAddressWrapper) {
@@ -38,7 +63,7 @@ public class UserControl {
 //        response.put("userid", a.getUSERID()); // Return the userid
 //        response.put("userrole", a.getUSERROLE());
 //        response.put("userid", a.getUSERID());
-        return ResponseEntity.ok("Signup sucessfull");
+        return ResponseEntity.ok(a.getUSERROLE());
     }
 
 //    @GetMapping("/getRole")
@@ -86,29 +111,6 @@ public ResponseEntity<String> getRole(HttpSession session) {
 //public class UserControl {
 //
 
-    @Autowired
-    ProductService productService;
-    @Autowired
-    TimeSlotRepository timeSlotRepository;
-    @Autowired
-    ItemRepository itemRepository;
-    @Autowired
-    OrderRepository orderRepository;
-    @Autowired
-    PaymentRepository paymentRepository;
-//    @Autowired
-//    AddressService addressService;
-    @Autowired
-    ItemService itemService;
-//    @Autowired
-//    UserRepository userRepository;
-    @Autowired
-    DeliveryRepository deliveryRepository;
-//    @Autowired
-//    OrderControl orderControl;
-    @Autowired
-    AddressRepository addressRepository;
-//
     @GetMapping("/getAllUsers")
     public List<UserModel> getAllUsers() {
         return userService.getAllUsers();
@@ -156,6 +158,20 @@ public ResponseEntity<String> getRole(HttpSession session) {
 //
 //
 //
+@GetMapping("/userDetails")
+public ResponseEntity<List<Map<String, String>>> userDetails() {
+    List<Object[]> users = userRepository.findUserDetails();
+    List<Map<String, String>> userDetails = users.stream().map(user -> {
+        Map<String, String> userMap = new HashMap<>();
+        userMap.put("username", (String) user[0]);
+        userMap.put("useremail", (String) user[1]);
+        userMap.put("userphonenumber", (String) user[2]);
+        return userMap;
+    }).collect(Collectors.toList());
+    return ResponseEntity.ok(userDetails);
+}
+
+
     @PostMapping("/addToCart")
     public void addToCart( @RequestParam Long PRODUCTID, @RequestParam Long QUANTITY,HttpSession session) {
         productService.addToCart(PRODUCTID, QUANTITY,(Long) session.getAttribute("USERID"));
@@ -228,23 +244,24 @@ public ResponseEntity<String> getRole(HttpSession session) {
 
 
     @PutMapping("/modifyCart/{ORDERID}")
-    private void modifyCart(@PathVariable Long ORDERID, @RequestParam String action, @RequestParam(required = false) Long QUANTITY, @RequestParam Long PRODUCTID,HttpSession session) {
+    private void modifyCart(@PathVariable Long ORDERID,HttpSession session) {
         Long USERID=(Long) session.getAttribute("USERID");
-        if (action.equals("add")) {
-            if(QUANTITY!=null){
-                itemService.MaddProduct(USERID,ORDERID,QUANTITY, PRODUCTID);
-            }
-            else{
-                itemService.MaddProduct(USERID,ORDERID,1L, PRODUCTID);
-            }
-//            itemService.getItemsByOrderIdCheckCart(USERID, ORDERID);
-        } else if (action.equals("delete")) {
-            if (QUANTITY != null && PRODUCTID != null && QUANTITY > 0) {
-                itemRepository.decreaseItemQuantity(USERID, ORDERID, QUANTITY, PRODUCTID);
-            } else if(PRODUCTID != null){
-                itemRepository.deleteItem(USERID, ORDERID,PRODUCTID);
-            }
-        }
+        itemRepository.ADD(ORDERID,USERID);
+//        if (action.equals("add")) {
+//            if(QUANTITY!=null){
+//                itemService.MaddProduct(USERID,ORDERID,QUANTITY, PRODUCTID);
+//            }
+//            else{
+//                itemService.MaddProduct(USERID,ORDERID,1L, PRODUCTID);
+//            }
+////            itemService.getItemsByOrderIdCheckCart(USERID, ORDERID);
+//        } else if (action.equals("delete")) {
+//            if (QUANTITY != null && PRODUCTID != null && QUANTITY > 0) {
+//                itemRepository.decreaseItemQuantity(USERID, ORDERID, QUANTITY, PRODUCTID);
+//            } else if(PRODUCTID != null){
+//                itemRepository.deleteItem(USERID, ORDERID,PRODUCTID);
+//            }
+//        }
     }
 
     @PutMapping("/addPayment/{ORDERID}")
@@ -292,12 +309,12 @@ public ResponseEntity<String> getRole(HttpSession session) {
         return addressService.addAddress(addressModel);
     }
 
-    @PutMapping("/addDelivery")
+    @PostMapping("/addDelivery")
     private String addDeliver(HttpSession session){
         Long USERID=(Long) session.getAttribute("USERID");
         System.out.println(deliveryRepository.checkUser(USERID));
         if(deliveryRepository.checkUser(USERID).equals("0")){
-            deliveryRepository.addDelivery(USERID,true,null,null);
+            deliveryRepository.addDelivery(USERID,1L,null,null);
             return USERID.toString();
         }
         else {
@@ -314,23 +331,29 @@ public ResponseEntity<String> getRole(HttpSession session) {
         }
     }
 
-//    @GetMapping("/showDelivery")
-//    private ResponseEntity<Map<String, Object>> showDelivery(HttpSession session){
-//        Long DELIVERYPERSONID=(Long) session.getAttribute("USERID");
-//        Long ORDERID=deliveryRepository.getOrderid(DELIVERYPERSONID);
-//        Long USERID=deliveryRepository.getUserid(DELIVERYPERSONID);
-//        Long VENDORID=itemRepository.getVendorid(ORDERID);
-//        Float TOTAL=orderRepository.getAMOUNT(ORDERID);
-//        String PAYMENTMETHOD=paymentRepository.getPaymentMode(ORDERID);
-//        String VENDORADDRESS= Arrays.toString(addressRepository.getAddress(VENDORID).get(1));
-//        String USERADDRESS= Arrays.toString(addressRepository.getAddress(USERID).get(1));
-//        Map<String, Object> r = new HashMap<>();
-//        r.put("pickup",VENDORADDRESS);
-//        r.put("drop",USERADDRESS);
-//        r.put("total",TOTAL);
-//        r.put("paymentmethod",PAYMENTMETHOD);
-//        return ResponseEntity.ok(r);
-//    }
+    @GetMapping("/showDelivery")
+    private ResponseEntity<Map<String, Object>> showDelivery(HttpSession session){
+        Long DELIVERYPERSONID=(Long) session.getAttribute("USERID");
+        if(deliveryRepository.getOrderid(DELIVERYPERSONID)!=null) {
+            Long ORDERID = deliveryRepository.getOrderid(DELIVERYPERSONID);
+            Long VENDORID = itemRepository.getVendorid(ORDERID);
+            Float TOTAL = orderRepository.getAMOUNT(ORDERID);
+            String PAYMENTMETHOD = paymentRepository.getPaymentMode(ORDERID);
+            String VENDORADDRESS = addressRepository.getAddress(VENDORID);
+            String USERADDRESS = orderRepository.getAddress(ORDERID);
+            Map<String, Object> r = new HashMap<>();
+            r.put("pickup", VENDORADDRESS);
+            r.put("drop", USERADDRESS);
+            r.put("total", TOTAL);
+            r.put("paymentmethod", PAYMENTMETHOD);
+            return ResponseEntity.ok(r);
+        }
+        else{
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("message", "No order found for the delivery person.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+    }
 
     @PutMapping("/updateAvailability")
     private void updateAvailability(@RequestParam String delivered,HttpSession session){
@@ -437,7 +460,7 @@ public ResponseEntity<List<Map<String, Object>>> showOrders(HttpSession session)
     @GetMapping("/showAddress")
     public ResponseEntity<List<Map<String, Object>>> showAddress(HttpSession session){
         Long USERID=(Long)session.getAttribute("USERID");
-        List<Object[]> results=addressRepository.getAddress(USERID);
+        List<Object[]> results=addressRepository.getAddressa(USERID);
         if(results.size()>0) {
             List<Map<String, Object>> addresses = new ArrayList<>();
             for (Object[] result : results) {
