@@ -1,0 +1,42 @@
+package com.grocerydelivery.backend.Repositories;
+
+import com.grocerydelivery.backend.Models.DeliveryModel;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
+import org.springframework.transaction.annotation.Transactional;
+
+public interface DeliveryRepository extends JpaRepository<DeliveryModel,Long> {
+
+    @Query(value = "SELECT CASE WHEN COUNT(*)>0 THEN 1 ELSE 0 END FROM DELIVERY WHERE DELIVERYPERSONID= :USERID",nativeQuery = true)
+    String checkUser(@Param("USERID") Long USERID);
+
+    @Query(value = "SELECT CASE WHEN COUNT(*)>0 THEN 1 ELSE 0 END FROM DELIVERY WHERE AVAILABILITY=1",nativeQuery = true)
+    String availability();
+
+    @Query(value = "SELECT DELIVERYPERSONID FROM DELIVERY WHERE AVAILABILITY=1 LIMIT 1",nativeQuery = true)
+    Long getDelivery();
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE DELIVERY SET USERID= :USERID,ORDERID= :ORDERID,AVAILABILITY=0 WHERE DELIVERYPERSONID=:DELIVERYPERSONID",nativeQuery = true)
+    void assignDelivery(@Param("USERID") Long USERID, @Param("ORDERID") Long ORDERID,@Param("DELIVERYPERSONID") Long DELIVERYPERSONID);
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE DELIVERY SET USERID= null,ORDERID=null,AVAILABILITY=true WHERE DELIVERYPERSONID= :DELIVERYPERSONID",nativeQuery = true)
+    void updateAvailability(@Param("DELIVERYPERSONID") Long DELIVERYPERSONID);
+
+    @Query(value = "SELECT ORDERID FROM DELIVERY WHERE DELIVERYPERSONID= :DELIVERYPERSONID",nativeQuery = true)
+    Long getOrderid(@Param("DELIVERYPERSONID") Long DELIVERYPERSONID);
+
+    @Query(value = "SELECT USERID FROM DELIVERY WHERE DELIVERYPERSONID= :DELIVERYPERSONID",nativeQuery = true)
+    Long getUserid(@Param("DELIVERYPERSONID") Long DELIVERYPERSONID);
+
+    @Transactional
+    @Modifying
+    @Query(value = "INSERT INTO DELIVERY VALUES(:DELIVERYPERSONID,:AVAILABILITY,:ORDERID,:USERID)",nativeQuery = true)
+    void addDelivery(@Param("DELIVERYPERSONID") Long DELIVERYPERSONID,@Param("AVAILABILITY") Long AVAILABILITY,@Param("ORDERID") Long ORDERID,@Param("USERID") Long USERID);
+}
