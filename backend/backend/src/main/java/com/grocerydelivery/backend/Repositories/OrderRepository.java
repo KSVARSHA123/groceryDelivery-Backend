@@ -20,7 +20,7 @@ public interface OrderRepository extends JpaRepository<OrderModel,Long> {
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE ORDERDETAILS SET TOTAL=:TOTAL WHERE ORDERID:ORDERID",nativeQuery = true)
+    @Query(value = "UPDATE ORDERDETAILS SET TOTAL=:TOTAL WHERE ORDERID=:ORDERID",nativeQuery = true)
     void setTOTAL(@Param("ORDERID") Long ORDERID,@Param("TOTAL") Float TOTAL);
 
     @Transactional
